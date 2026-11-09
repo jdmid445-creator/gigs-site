@@ -8,14 +8,14 @@ export default function Home() {
       <section className="hero">
         <div className="wrap hero-grid">
           <div>
-            <h1>Hire people for crypto work. Pay when it&apos;s done.</h1>
+            <h1>Crypto work with the money already locked.</h1>
             <p className="lede">
-              Post a job for design, edits, threads, code or community work. The budget is locked in a
-              vault that needs two of three signatures to move, so nobody runs off with it, us included.
+              Every gig&apos;s budget sits in its own vault shared by the poster, the worker and a referee. Two of the
+              three have to sign before it moves, so nobody can pull it alone.
             </p>
             <div className="hero-actions">
-              <Link href="/post" className="btn blue">Post a gig</Link>
-              <Link href="#board" className="btn line">Find work</Link>
+              <Link href="/post" className="btn primary">Post a gig</Link>
+              <Link href="#board" className="btn line">Browse gigs</Link>
             </div>
           </div>
           <HeroDemo />

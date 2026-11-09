@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/components/Providers";
-import Slip from "@/components/Slip";
+import GigRow from "@/components/Slip";
 import { CATEGORIES, MIN_AMOUNT, FEE_BPS } from "@/lib/config";
 import { api } from "@/lib/client";
 import { toBase, Currency } from "@/lib/money";
@@ -45,88 +45,99 @@ export default function PostGig() {
 
   return (
     <div className="page">
-      <div className="wrap gig-grid">
-        <form className="form" onSubmit={submit}>
-          <h1>Post a gig</h1>
-          <p className="muted">
-            Nothing leaves your wallet now. When you hire someone, you sign once to lock the budget in a vault
-            shared by you, the worker and a referee.
-          </p>
-
-          <div className="field">
-            <label htmlFor="title">What do you need done?</label>
-            <input id="title" className="input" maxLength={90} value={title} onChange={(e) => setTitle(e.target.value)}
-              placeholder="Logo for a Solana token, white background, 3 options" required />
-          </div>
-
-          <div className="field">
-            <label htmlFor="desc">Details</label>
-            <textarea id="desc" className="textarea" maxLength={4000} value={description}
-              onChange={(e) => setDescription(e.target.value)} required
-              placeholder={"What to deliver, the format and size, references you like, and what counts as done."} />
-            <span className="hint">Be specific about what “done” means. That&apos;s what the referee checks if there&apos;s a dispute.</span>
-          </div>
-
-          <div className="field">
-            <label htmlFor="cat">Category</label>
-            <select id="cat" className="select" value={category} onChange={(e) => setCategory(e.target.value)}>
-              {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-            </select>
-          </div>
-
-          <div className="row">
-            <div className="field">
-              <label htmlFor="amt">Budget</label>
-              <input id="amt" className="input" inputMode="decimal" value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(",", "."))}
-                placeholder={currency === "SOL" ? "2.5" : "250"} required />
-              <span className="hint">Minimum {MIN_AMOUNT[currency]} {currency}</span>
+      <div className="wrap">
+        <div className="gig-grid">
+          <form className="panel form" onSubmit={submit}>
+            <div style={{ display: "grid", gap: 10 }}>
+              <h1>Post a gig</h1>
+              <p className="muted">
+                Nothing leaves your wallet yet. When you hire someone, you sign once to lock the budget in a vault shared by
+                you, the worker and a referee.
+              </p>
             </div>
+
             <div className="field">
-              <label>Paid in</label>
-              <div className="seg" role="group" aria-label="Currency">
-                {(["SOL", "USDC"] as const).map((c) => (
-                  <button type="button" key={c} aria-pressed={currency === c} onClick={() => setCurrency(c)}>{c}</button>
-                ))}
+              <label htmlFor="title">What do you need done?</label>
+              <input id="title" className="input" maxLength={90} value={title} onChange={(e) => setTitle(e.target.value)}
+                placeholder="Logo for a Solana token, white background, 3 options" required />
+            </div>
+
+            <div className="field">
+              <label htmlFor="desc">Details</label>
+              <textarea id="desc" className="textarea" maxLength={4000} value={description}
+                onChange={(e) => setDescription(e.target.value)} required
+                placeholder="What to deliver, the format and size, references you like, and what counts as done." />
+              <span className="hint">Spell out what “done” means. It&apos;s what the referee checks if there&apos;s a dispute.</span>
+            </div>
+
+            <div className="row">
+              <div className="field">
+                <label htmlFor="cat">Category</label>
+                <select id="cat" className="select" value={category} onChange={(e) => setCategory(e.target.value)}>
+                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="field">
+                <label htmlFor="days">Deadline</label>
+                <select id="days" className="select" value={days} onChange={(e) => setDays(Number(e.target.value))}>
+                  {[1, 2, 3, 5, 7, 14, 30].map((d) => <option key={d} value={d}>{d} day{d > 1 ? "s" : ""} after hiring</option>)}
+                </select>
               </div>
             </div>
-            <div className="field">
-              <label htmlFor="days">Deadline</label>
-              <select id="days" className="select" value={days} onChange={(e) => setDays(Number(e.target.value))}>
-                {[1, 2, 3, 5, 7, 14, 30].map((d) => <option key={d} value={d}>{d} day{d > 1 ? "s" : ""}</option>)}
-              </select>
+
+            <div className="row" style={{ alignItems: "start" }}>
+              <div className="field">
+                <label htmlFor="amt">Budget</label>
+                <div className="amount-input">
+                  <input id="amt" className="input" inputMode="decimal" value={amount}
+                    onChange={(e) => setAmount(e.target.value.replace(",", "."))}
+                    placeholder={currency === "SOL" ? "2.5" : "250"} required />
+                  <span>{currency}</span>
+                </div>
+                <span className="hint">Minimum {MIN_AMOUNT[currency]} {currency}</span>
+              </div>
+              <div className="field">
+                <label>Pay in</label>
+                <div className="seg" role="group" aria-label="Currency">
+                  {(["SOL", "USDC"] as const).map((c) => (
+                    <button type="button" key={c} aria-pressed={currency === c} onClick={() => setCurrency(c)}>{c}</button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
 
-          <p className="hint muted small">
-            Not allowed: dangerous stunts, harassment, adult content, anything illegal, and wallet or market manipulation.
-            {FEE_BPS > 0 && ` A ${FEE_BPS / 100}% fee is taken from the payout when the job is paid.`}
-          </p>
-          {err && <p className="error">{err}</p>}
-          <div>
-            <button className="btn blue" disabled={busy}>
-              {busy ? "Posting…" : wallet ? "Post gig" : "Sign in to post"}
-            </button>
-          </div>
-        </form>
+            {err && <p className="error">{err}</p>}
+            <div className="row" style={{ alignItems: "center" }}>
+              <button className="btn primary" style={{ flex: "0 0 auto" }} disabled={busy}>
+                {busy ? "Posting…" : wallet ? "Post gig" : "Sign in to post"}
+              </button>
+              <span className="hint" style={{ flex: "1 1 240px" }}>
+                No stunts, harassment, adult content, illegal work, or wallet and market manipulation.
+                {FEE_BPS > 0 && ` ${FEE_BPS / 100}% is taken from the payout when the job is paid.`}
+              </span>
+            </div>
+          </form>
 
-        <aside className="side">
-          <span className="muted small">How it shows on the board</span>
-          <Slip
-            href={false}
-            gig={{
-              id: "preview",
-              title: title || "Your gig title",
-              category,
-              currency,
-              amount: preview,
-              deadline_days: days,
-              status: "open",
-              created_at: new Date().toISOString(),
-            }}
-            meta={<span>{days}d deadline</span>}
-          />
-        </aside>
+          <aside className="side">
+            <div className="list">
+              <GigRow
+                href={false}
+                gig={{
+                  id: "preview",
+                  title: title || "Your gig title",
+                  category,
+                  currency,
+                  amount: preview,
+                  deadline_days: days,
+                  status: "open",
+                  created_at: new Date().toISOString(),
+                }}
+                meta={<span>{days} day deadline</span>}
+              />
+            </div>
+            <p className="hint" style={{ padding: "0 8px" }}>This is how your gig shows up on the board.</p>
+          </aside>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/components/Providers";
-import Slip, { SlipGig } from "@/components/Slip";
+import GigRow, { SlipGig } from "@/components/Slip";
 import { api, ago } from "@/lib/client";
 
 type Me = {
@@ -69,28 +69,28 @@ export default function MyGigs() {
           <h1>Your gigs</h1>
           {me?.isReferee && <div className="notice">You&apos;re the referee. <Link href="/admin">Open the dispute queue</Link></div>}
           <section style={{ display: "grid", gap: 12 }}>
-            <h2 style={{ fontSize: 20 }}>Work you&apos;re doing</h2>
-            {working.length ? working.map((g) => <Slip key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)
+            <h2>Work you&apos;re doing</h2>
+            {working.length ? <div className="list">{working.map((g) => <GigRow key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)}</div>
               : <p className="muted">Nothing yet. <Link href="/#board">Find a gig</Link></p>}
           </section>
           {pending.length > 0 && (
             <section style={{ display: "grid", gap: 8 }}>
-              <h2 style={{ fontSize: 20 }}>Applications waiting</h2>
+              <h2>Applications waiting</h2>
               {pending.map((a) => (
-                <Link key={a.gig_id} href={`/gigs/${a.gig_id}`} className="small">{a.gigs!.title} · applied {ago(a.created_at)}</Link>
+                <Link key={a.gig_id} href={`/gigs/${a.gig_id}`} className="small">{a.gigs!.title}, applied {ago(a.created_at)}</Link>
               ))}
             </section>
           )}
           <section style={{ display: "grid", gap: 12 }}>
-            <h2 style={{ fontSize: 20 }}>Gigs you posted</h2>
-            {posted.length ? posted.map((g) => <Slip key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)
+            <h2>Gigs you posted</h2>
+            {posted.length ? <div className="list">{posted.map((g) => <GigRow key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)}</div>
               : <p className="muted">You haven&apos;t posted anything. <Link href="/post">Post a gig</Link></p>}
           </section>
         </div>
 
         <aside className="side">
           <form className="panel" onSubmit={save}>
-            <h2 style={{ fontSize: 18 }}>Your profile</h2>
+            <h2>Your profile</h2>
             <p className="muted small">Posters see this when you apply.</p>
             <div className="field"><label htmlFor="h">Handle</label><input id="h" className="input" value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="yourname" /></div>
             <div className="field"><label htmlFor="x">X account</label><input id="x" className="input" value={xh} onChange={(e) => setXh(e.target.value)} placeholder="@you" /></div>

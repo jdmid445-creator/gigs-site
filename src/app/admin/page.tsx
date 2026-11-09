@@ -33,7 +33,7 @@ export default function Admin() {
         <h1>Referee</h1>
         {err && <p className="error">{err}</p>}
         <section className="panel">
-          <h2 style={{ fontSize: 20 }}>Open disputes ({q?.disputes.length ?? 0})</h2>
+          <h2>Open disputes ({q?.disputes.length ?? 0})</h2>
           {q?.disputes.length === 0 && <p className="muted">No disputes right now.</p>}
           {q?.disputes.map((d) => d.gigs && (
             <div key={d.id} className="app">
@@ -48,7 +48,7 @@ export default function Admin() {
           ))}
         </section>
         <section className="panel">
-          <h2 style={{ fontSize: 20 }}>Reports</h2>
+          <h2>Reports</h2>
           {q?.reports.length === 0 && <p className="muted">No reports.</p>}
           {q?.reports.map((r, i) => r.gigs && (
             <div key={i} className="app">
@@ -56,14 +56,14 @@ export default function Admin() {
                 <Link href={`/gigs/${r.gig_id}`}>{r.gigs.title}</Link>
                 <button className="btn line" onClick={() => hide(r.gig_id, !r.gigs!.hidden)}>{r.gigs.hidden ? "Restore listing" : "Hide listing"}</button>
               </div>
-              <span className="muted small">{short(r.reporter)} · {ago(r.created_at)}</span>
+              <span className="muted small">{short(r.reporter)}, {ago(r.created_at)}</span>
               <p>{r.reason}</p>
             </div>
           ))}
         </section>
         {q && q.hidden.length > 0 && (
           <section className="panel">
-            <h2 style={{ fontSize: 20 }}>Hidden listings</h2>
+            <h2>Hidden listings</h2>
             {q.hidden.map((g) => (
               <div key={g.id} className="app-top">
                 <Link href={`/gigs/${g.id}`}>{g.title}</Link>

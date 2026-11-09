@@ -1,49 +1,48 @@
 "use client";
 import { useEffect, useState } from "react";
 
-/** One slip that stamps through the escrow states: the single animated moment on the page. */
-const STEPS = [
-  { stamp: "Open", cls: "", text: "Poster lists the job and budget" },
-  { stamp: "Locked", cls: "", text: "Hired: 4 SOL locked in a 2-of-3 vault" },
-  { stamp: "Delivered", cls: "", text: "Worker delivers and requests payment" },
-  { stamp: "Paid", cls: "paid", text: "Poster approves, the vault pays out" },
+/**
+ * The vault, signing itself: worker approves, poster approves, funds release.
+ * The only animated moment on the page.
+ */
+const FRAMES = [
+  { worker: false, poster: false, status: "Locked", cls: "locked", note: "Needs 2 of 3 to release" },
+  { worker: true, poster: false, status: "Delivered", cls: "locked", note: "Worker signed, 1 of 2" },
+  { worker: true, poster: true, status: "Paid", cls: "paid", note: "Released to the worker" },
 ];
 
 export default function HeroDemo() {
   const [i, setI] = useState(0);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = setInterval(() => setI((x) => (x + 1) % STEPS.length), 2200);
+    const t = setInterval(() => setI((x) => (x + 1) % FRAMES.length), 2400);
     return () => clearInterval(t);
   }, []);
-  const s = STEPS[i];
+  const f = FRAMES[i];
+  const rows = [
+    { who: "Worker", what: f.worker ? "Signed payout" : "Delivering", on: f.worker },
+    { who: "Poster", what: f.poster ? "Signed payout" : "Reviewing", on: f.poster },
+    { who: "Referee", what: "Only votes in a dispute", on: false },
+  ];
   return (
-    <div className="demo" aria-label="Example of a gig moving through escrow">
-      <div className="demo-card">
-      <div className="slip">
-        <div className="slip-body" style={{ paddingBottom: 26 }}>
-          <span className="slip-cat">Video &amp; motion</span>
-          <span className="slip-title">15s launch teaser, motion graphics only, 1:1</span>
-          <div className="slip-meta">
-            <span>Due in 3 days</span>
-            <span>7 applicants</span>
-          </div>
-        </div>
-        <div className="slip-stub">
-          <span className="slip-amount">4</span>
-          <span className="slip-cur">SOL</span>
-        </div>
+    <div className="vault" aria-label="Example: a gig budget locked in a 2-of-3 vault">
+      <div className="vault-top">
+        <span className="vault-title">Logo pack, 3 concepts</span>
       </div>
-      <span key={i} className={`stamp demo-stamp ${s.cls}`}>{s.stamp}</span>
-      </div>
-      <ol className="demo-steps">
-        {STEPS.map((st, n) => (
-          <li key={st.stamp} className={n === i ? "on" : ""}>
-            <b>{n + 1}</b>
-            {st.text}
+      <div className="vault-amt">4.5<small>SOL locked</small></div>
+      <ul className="signers">
+        {rows.map((r) => (
+          <li key={r.who} className={`signer ${r.on ? "on" : ""}`}>
+            <span className={`sig ${r.on ? "on" : ""}`} />
+            <span className="who">{r.who}</span>
+            <span className="what">{r.what}</span>
           </li>
         ))}
-      </ol>
+      </ul>
+      <div className="vault-foot">
+        <span>{f.note}</span>
+        <span className={`status ${f.cls}`}>{f.status}</span>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SITE_NAME, FEE_BPS } from "@/lib/config";
 
-export const metadata = { title: `How it works · ${SITE_NAME}` };
+export const metadata = { title: `How it works | ${SITE_NAME}` };
 
 export default function HowItWorks() {
   return (
@@ -69,7 +69,7 @@ export default function HowItWorks() {
             {FEE_BPS > 0 ? `${SITE_NAME} takes ${FEE_BPS / 100}% from each completed payout. Refunds are free. ` : `${SITE_NAME} doesn't take a fee right now. `}
             Solana network fees are a fraction of a cent. Creating a vault also has a small one-time account cost, which your wallet shows before you sign.
           </p>
-          <p style={{ marginTop: 24 }}><Link className="btn blue" href="/post">Post a gig</Link></p>
+          <p style={{ marginTop: 24 }}><Link className="btn primary" href="/post">Post a gig</Link></p>
         </article>
       </div>
     </div>
