@@ -70,7 +70,7 @@ export default function Board() {
         )}
         {!data && !err && (
           <div className="list" aria-busy>
-            {[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" />)}
+            {[0, 1, 2, 3].map((i) => <div key={i} className="placeholder-row"><i /><i /></div>)}
           </div>
         )}
         {data && shown.length === 0 && (

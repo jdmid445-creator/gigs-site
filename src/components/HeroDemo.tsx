@@ -1,37 +1,57 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import GuardBunny from "./GuardBunny";
 
 /**
- * The vault, signing itself: worker approves, poster approves, funds release.
- * The only animated moment on the page.
+ * The vault signing itself once when it comes into view: worker signs, poster signs, it pays out.
+ * It explains the product, so it plays once and stops. Click the card to watch it again.
  */
 const FRAMES = [
-  { worker: false, poster: false, status: "Locked", cls: "locked", note: "Needs 2 of 3 to release" },
+  { worker: false, poster: false, status: "Locked", cls: "locked", note: "Needs 2 of 3 signatures to release" },
   { worker: true, poster: false, status: "Delivered", cls: "locked", note: "Worker signed, 1 of 2" },
   { worker: true, poster: true, status: "Paid", cls: "paid", note: "Released to the worker" },
 ];
 
 export default function HeroDemo() {
   const [i, setI] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const play = () => {
+    timers.current.forEach(clearTimeout);
+    setI(0);
+    timers.current = [setTimeout(() => setI(1), 1600), setTimeout(() => setI(2), 3200)];
+  };
+
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = setInterval(() => setI((x) => (x + 1) % FRAMES.length), 2400);
-    return () => clearInterval(t);
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setI(2); return; }
+    const io = new IntersectionObserver((es) => {
+      if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); }
+    }, { threshold: 0.6 });
+    io.observe(el);
+    const t = timers.current;
+    return () => { io.disconnect(); t.forEach(clearTimeout); };
   }, []);
+
   const f = FRAMES[i];
   const rows = [
-    { who: "Worker", what: f.worker ? "Signed payout" : "Delivering", on: f.worker },
-    { who: "Poster", what: f.poster ? "Signed payout" : "Reviewing", on: f.poster },
+    { who: "Worker", what: f.worker ? "Signed the payout" : "Delivering", on: f.worker },
+    { who: "Poster", what: f.poster ? "Signed the payout" : "Reviewing", on: f.poster },
     { who: "Referee", what: "Only votes in a dispute", on: false },
   ];
   return (
-    <div className="vault has-guard" aria-label="Example: a gig budget locked in a 2-of-3 vault">
-      <GuardBunny variant="hero" intro="I keep an eye on every vault." />
+    <div ref={ref} className="vault has-guard" onClick={play} title="Play again"
+      aria-label="Example: a gig budget locked in a 2-of-3 vault">
+      <GuardBunny variant="hero" intro="I keep an eye on every vault" />
       <div className="vault-top">
         <span className="vault-title">Logo pack, 3 concepts</span>
+        <span className="dots" aria-label={`${(f.worker ? 1 : 0) + (f.poster ? 1 : 0)} of 2 signatures`}>
+          <i className={f.worker ? "on" : ""} /><i className={f.poster ? "on" : ""} /><i />
+        </span>
       </div>
-      <div className="vault-amt">4.5<small>SOL locked</small></div>
+      <div className="vault-amt">4.5<small>SOL in the vault</small></div>
       <ul className="signers">
         {rows.map((r) => (
           <li key={r.who} className={`signer ${r.on ? "on" : ""}`}>

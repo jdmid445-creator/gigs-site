@@ -49,7 +49,7 @@ export default function PostGig() {
       <div className="wrap">
         <div className="gig-grid">
           <form className="panel form has-guard" onSubmit={submit}>
-            <GuardBunny variant="post" intro="Say what “done” means. Saves a fight later." />
+            <GuardBunny variant="post" intro="Say what “done” means. Saves a fight later" />
             <div style={{ display: "grid", gap: 10 }}>
               <h1>Post a gig</h1>
               <p className="muted">

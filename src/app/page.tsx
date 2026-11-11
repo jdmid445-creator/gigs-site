@@ -7,11 +7,11 @@ export default function Home() {
     <>
       <section className="hero">
         <div className="wrap hero-grid">
-          <div>
-            <h1>Crypto work with the money already locked.</h1>
+          <div className="rise">
+            <h1>Crypto work with the money already locked</h1>
             <p className="lede">
-              Every gig&apos;s budget sits in its own vault shared by the poster, the worker and a referee. Two of the
-              three have to sign before it moves, so nobody can pull it alone.
+              Post a job for design, edits, threads or code. The budget sits in a vault shared by you, the worker and a
+              referee, and two of the three have to sign before it moves.
             </p>
             <div className="hero-actions">
               <Link href="/post" className="btn primary">Post a gig</Link>

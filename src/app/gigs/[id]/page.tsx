@@ -144,10 +144,10 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
                 variant="gig"
                 mood={g.status === "paid" ? "happy" : "idle"}
                 intro={
-                  g.status === "paid" ? "Paid out. Nice work."
-                  : g.status === "submitted" ? "Work's in. Check it, then sign."
-                  : inEscrow ? "Budget's locked. I'm watching it."
-                  : g.status === "open" ? "Money stays with the poster until someone's hired."
+                  g.status === "paid" ? "Paid out. Nice work"
+                  : g.status === "submitted" ? "Work's in. Check it, then sign"
+                  : inEscrow ? "Budget's locked. I'm watching it"
+                  : g.status === "open" ? "The money stays with the poster until someone's hired"
                   : ""
                 }
               />
