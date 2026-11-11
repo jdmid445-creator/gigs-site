@@ -5,6 +5,7 @@ import GigRow, { SlipGig } from "./Slip";
 import { CATEGORIES } from "@/lib/config";
 import { api, ago, short } from "@/lib/client";
 import Bunny from "./Bunny";
+import LiveFeed from "./LiveFeed";
 
 type Gig = SlipGig & { poster: string; description?: string };
 type Res = { gigs: Gig[]; totals: { lockedSol: number; lockedUsdc: number; paidCount: number } };
@@ -62,48 +63,53 @@ export default function Board() {
           ))}
         </div>
 
-        {err && (
-          <div className="empty">
-            <h3>The board didn&apos;t load</h3>
-            <p className="muted">{err}</p>
+        <div className="board-grid">
+          <div className="board-main">
+            {err && (
+              <div className="empty">
+                <h3>The board didn&apos;t load</h3>
+                <p className="muted">{err}</p>
+              </div>
+            )}
+            {!data && !err && (
+              <div className="list" aria-busy>
+                {[0, 1, 2, 3].map((i) => <div key={i} className="placeholder-row"><i /><i /></div>)}
+              </div>
+            )}
+            {data && shown.length === 0 && (
+              <div className="empty empty-bunny">
+                <Bunny size={130} id="gigs-empty" mood="sleep" title="GIGS napping" />
+                <h3>{q ? `Nothing matches “${q}”` : status === "open" ? "No open gigs here yet" : "Nothing here yet"}</h3>
+                <p className="muted">Post one. Your budget stays in your wallet until you hire someone.</p>
+                <Link className="btn primary" href="/post">Post a gig</Link>
+              </div>
+            )}
+            {data && shown.length > 0 && (
+              <div className="list">
+                {shown.map((g) => (
+                  <GigRow
+                    key={g.id}
+                    gig={g}
+                    meta={
+                      <>
+                        <span>{g.deadline_days} day deadline</span>
+                        <span>{short(g.poster)}</span>
+                        <span>{ago(g.created_at)}</span>
+                      </>
+                    }
+                  />
+                ))}
+              </div>
+            )}
+            {t && (t.lockedSol > 0 || t.lockedUsdc > 0 || t.paidCount > 0) && (
+              <div className="totals">
+                <span><b>{t.lockedSol.toLocaleString("en-US", { maximumFractionDigits: 2 })} SOL</b>and <b>{t.lockedUsdc.toLocaleString("en-US", { maximumFractionDigits: 0 })} USDC</b>locked right now</span>
+                <span><b>{t.paidCount}</b>gigs paid out</span>
+              </div>
+            )}
           </div>
-        )}
-        {!data && !err && (
-          <div className="list" aria-busy>
-            {[0, 1, 2, 3].map((i) => <div key={i} className="placeholder-row"><i /><i /></div>)}
-          </div>
-        )}
-        {data && shown.length === 0 && (
-          <div className="empty empty-bunny">
-            <Bunny size={130} id="gigs-empty" mood="sleep" title="GIGS napping" />
-            <h3>{q ? `Nothing matches “${q}”` : status === "open" ? "No open gigs here yet" : "Nothing here yet"}</h3>
-            <p className="muted">Post one. Your budget stays in your wallet until you hire someone.</p>
-            <Link className="btn primary" href="/post">Post a gig</Link>
-          </div>
-        )}
-        {data && shown.length > 0 && (
-          <div className="list">
-            {shown.map((g) => (
-              <GigRow
-                key={g.id}
-                gig={g}
-                meta={
-                  <>
-                    <span>{g.deadline_days} day deadline</span>
-                    <span>{short(g.poster)}</span>
-                    <span>{ago(g.created_at)}</span>
-                  </>
-                }
-              />
-            ))}
-          </div>
-        )}
-        {t && (t.lockedSol > 0 || t.lockedUsdc > 0 || t.paidCount > 0) && (
-          <div className="totals">
-            <span><b>{t.lockedSol.toLocaleString("en-US", { maximumFractionDigits: 2 })} SOL</b>and <b>{t.lockedUsdc.toLocaleString("en-US", { maximumFractionDigits: 0 })} USDC</b>locked right now</span>
-            <span><b>{t.paidCount}</b>gigs paid out</span>
-          </div>
-        )}
+          <LiveFeed />
+        </div>
       </div>
     </section>
   );

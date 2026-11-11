@@ -94,3 +94,17 @@ alter table submissions  enable row level security;
 alter table disputes     enable row level security;
 alter table reports      enable row level security;
 alter table events       enable row level security;
+
+-- ---------- added: reviews (run this part if you ran the file before) ----------
+create table if not exists reviews (
+  id          uuid primary key default gen_random_uuid(),
+  gig_id      uuid not null references gigs(id) on delete cascade,
+  author      text not null,
+  subject     text not null,
+  rating      int not null check (rating between 1 and 5),
+  body        text not null default '',
+  created_at  timestamptz default now(),
+  unique (gig_id, author)
+);
+create index if not exists reviews_subject_idx on reviews (subject, created_at desc);
+alter table reviews enable row level security;

@@ -58,6 +58,7 @@ export default function WalletButton() {
         </button>
         {menu && (
           <div className="wallet-pop" role="menu">
+            <a href={`/u/${wallet}`} role="menuitem">Your profile</a>
             <a href="/me" role="menuitem">Your gigs</a>
             <button role="menuitem" onClick={() => { setMenu(false); signOut(); }}>Sign out</button>
           </div>

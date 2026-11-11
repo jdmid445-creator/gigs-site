@@ -6,8 +6,10 @@ import { useSession } from "@/components/Providers";
 import { Stamp, amountParts } from "@/components/Slip";
 import GuardBunny from "@/components/GuardBunny";
 import Bunny from "@/components/Bunny";
+import Avatar from "@/components/Avatar";
+import { UsdHint } from "@/components/usePrices";
 import { api, ago, friendlyWalletError, short, signAndSend } from "@/lib/client";
-import { explorerAccount, explorerTx, squadsVaultUrl } from "@/lib/config";
+import { explorerAccount, explorerTx, squadsVaultUrl, SITE_NAME } from "@/lib/config";
 import { Currency, fromBase } from "@/lib/money";
 
 type Proposal = { state: "none" | "active" | "approved" | "executed" | "rejected" | "cancelled"; approved: string[] } | null;
@@ -29,6 +31,7 @@ type Data = {
   release: Proposal;
   refund: Proposal;
   feeBps: number;
+  reviews: { author: string; subject: string; rating: number; body: string; created_at: string }[];
 };
 
 const EVENT_TEXT: Record<string, string> = {
@@ -158,7 +161,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
               <h1>{g.title}</h1>
               <p className="gig-desc">{g.description}</p>
               <p className="muted small">
-                Posted {ago(g.created_at)} by {d.poster?.handle ? `@${d.poster.handle}` : short(g.poster)}
+                Posted {ago(g.created_at)} by <Link href={`/u/${d.poster?.handle ?? g.poster}`}>{d.poster?.handle ? `@${d.poster.handle}` : short(g.poster)}</Link>
                 {d.poster?.x_handle && <> (<a href={`https://x.com/${d.poster.x_handle}`} target="_blank" rel="noreferrer">X</a>)</>}
               </p>
             </div>
@@ -196,17 +199,18 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
 
           <aside className="side">
             <div className="panel">
-              <div className="budget"><b>{amountParts(g.amount, g.currency)}</b><span>{g.currency}</span></div>
+              <div className="budget"><b>{amountParts(g.amount, g.currency)}</b><span>{g.currency}</span><UsdHint amount={g.amount} currency={g.currency} /></div>
               {payout !== null && <span className="muted small">Worker receives {payout.toLocaleString("en-US", { maximumFractionDigits: 4 })} {g.currency} after the {d.feeBps / 100}% fee</span>}
               <dl className="facts">
                 <div><dt>Deadline</dt><dd>{g.deadline_days} days after hiring</dd></div>
-                <div><dt>Poster</dt><dd><a href={explorerAccount(g.poster)} target="_blank" rel="noreferrer">{short(g.poster)}</a></dd></div>
-                {g.worker && <div><dt>Worker</dt><dd><a href={explorerAccount(g.worker)} target="_blank" rel="noreferrer">{short(g.worker)}</a></dd></div>}
+                <div><dt>Poster</dt><dd><Link href={`/u/${g.poster}`}>{short(g.poster)}</Link></dd></div>
+                {g.worker && <div><dt>Worker</dt><dd><Link href={`/u/${g.worker}`}>{short(g.worker)}</Link></dd></div>}
                 {g.vault && <div><dt>Vault</dt><dd><a href={explorerAccount(g.vault)} target="_blank" rel="noreferrer">{short(g.vault)}</a></dd></div>}
                 {g.multisig && <div><dt>Vault rules</dt><dd><a href={squadsVaultUrl(g.multisig)} target="_blank" rel="noreferrer">2 of 3 on Squads</a></dd></div>}
               </dl>
             </div>
             {g.worker && g.multisig && <Signers />}
+            <ShareBox />
             <div className="panel">
               <h2>History</h2>
               <ol className="timeline">
@@ -278,7 +282,12 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     const role = d!.role;
 
     if (g.status === "paid")
-      return <div className="panel"><div className="notice good"><Bunny size={84} id="gigs-paid" mood="happy" title="GIGS celebrating" />Paid. The vault sent {amt} to the worker.</div></div>;
+      return (
+        <div className="panel">
+          <div className="notice good"><Bunny size={84} id="gigs-paid" mood="happy" title="GIGS celebrating" />Paid. The vault sent {amt} to the worker.</div>
+          {(role === "poster" || role === "worker") && <ReviewBox />}
+        </div>
+      );
     if (g.status === "refunded")
       return <div className="panel"><div className="notice">Refunded. The budget went back to the poster.</div></div>;
     if (g.status === "cancelled")
@@ -377,8 +386,9 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
             return (
               <div className="app" key={a.applicant}>
                 <div className="app-top">
-                  <strong>
-                    {p?.handle ? `@${p.handle}` : short(a.applicant)}
+                  <strong className="who-line">
+                    <Avatar wallet={a.applicant} size={28} />
+                    <Link href={`/u/${a.applicant}`}>{p?.handle ? `@${p.handle}` : short(a.applicant)}</Link>
                     {p?.x_handle && <>{" "}<a href={`https://x.com/${p.x_handle}`} target="_blank" rel="noreferrer">X</a></>}
                   </strong>
                   <button className="btn primary" disabled={!!busy}
@@ -490,6 +500,56 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
         </div>
         {rel?.state !== "active" && <p className="muted small">“Pay” unlocks once the worker requests payment.</p>}
         {ref?.state !== "active" && <p className="muted small">“Refund” unlocks once the poster requests a refund.</p>}
+      </div>
+    );
+  }
+
+  function ShareBox() {
+    const url = typeof window !== "undefined" ? window.location.href.split("#")[0] : "";
+    const locked = g.status === "funded" || g.status === "submitted";
+    const text = g.status === "paid"
+      ? `Paid out ${amt} through escrow on ${SITE_NAME}: ${g.title}`
+      : locked ? `${amt} locked in escrow for: ${g.title}`
+      : `Hiring: ${g.title}. ${amt}, paid from escrow`;
+    const [copied, setCopied] = useState(false);
+    return (
+      <div className="share">
+        <a className="btn line sm" target="_blank" rel="noreferrer"
+          href={`https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`}>
+          Share on X
+        </a>
+        <button className="text-btn" onClick={() => { navigator.clipboard?.writeText(url).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1600); }); }}>
+          {copied ? "Link copied" : "Copy link"}
+        </button>
+      </div>
+    );
+  }
+
+  function ReviewBox() {
+    const role = d!.role;
+    const [rating, setRating] = useState(0);
+    const [body, setBody] = useDraft("review");
+    const mine = d!.reviews.find((r) => r.author === d!.me);
+    const other = role === "poster" ? "the worker" : "the poster";
+    if (mine) return <p className="muted small">You gave {other} {mine.rating} out of 5. Thanks for the review.</p>;
+    return (
+      <div style={{ display: "grid", gap: 12 }}>
+        <h2>Review {other}</h2>
+        <div className="rate-pick" role="radiogroup" aria-label="Rating">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button key={n} type="button" role="radio" aria-checked={rating === n} aria-label={`${n} out of 5`}
+              className={rating >= n ? "on" : ""} onClick={() => setRating(n)} />
+          ))}
+          <span className="hint">{rating ? `${rating} out of 5` : "Pick a rating"}</span>
+        </div>
+        <textarea className="textarea" style={{ minHeight: 80 }} maxLength={500} value={body} onChange={(e) => setBody(e.target.value)}
+          placeholder="What was it like to work with them? (optional)" />
+        <div>
+          <button className="btn" disabled={!rating || !!busy} onClick={() => post(`/api/gigs/${id}/review`, { rating, body }, "Review posted.")}>
+            Post review
+          </button>
+        </div>
+        <Feedback />
       </div>
     );
   }

@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
-import { fromBase, Currency } from "@/lib/money";
+import { Currency, amountShort } from "@/lib/money";
+import { UsdHint } from "./usePrices";
 
 const STATUS: Record<string, { label: string; cls: string }> = {
   open: { label: "Open", cls: "open" },
@@ -17,10 +19,7 @@ export function Stamp({ status, disputed }: { status: string; disputed?: boolean
   return <span className={`status ${s.cls}`}>{s.label}</span>;
 }
 
-export function amountParts(amount: string, currency: Currency) {
-  const n = fromBase(amount, currency);
-  return n.toLocaleString("en-US", { maximumFractionDigits: currency === "SOL" ? (n < 1 ? 3 : 2) : 0 });
-}
+export const amountParts = amountShort;
 
 export type SlipGig = {
   id: string;
@@ -48,6 +47,7 @@ export default function GigRow({ gig, meta, href = true }: { gig: SlipGig; meta?
       <div className="gig-amt">
         {amountParts(gig.amount, gig.currency)}
         <small>{gig.currency}</small>
+        <UsdHint amount={gig.amount} currency={gig.currency} />
       </div>
       <Stamp status={gig.status} disputed={gig.disputed} />
     </>

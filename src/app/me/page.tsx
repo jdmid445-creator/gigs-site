@@ -66,7 +66,10 @@ export default function MyGigs() {
     <div className="page">
       <div className="wrap gig-grid">
         <div style={{ display: "grid", gap: 30 }}>
-          <h1>Your gigs</h1>
+          <div className="head-row" style={{ justifyContent: "space-between" }}>
+            <h1>Your gigs</h1>
+            <Link className="btn line sm" href={`/u/${wallet}`}>View public profile</Link>
+          </div>
           {me?.isReferee && <div className="notice">You&apos;re the referee. <Link href="/admin">Open the dispute queue</Link></div>}
           <section style={{ display: "grid", gap: 12 }}>
             <h2>Work you&apos;re doing</h2>

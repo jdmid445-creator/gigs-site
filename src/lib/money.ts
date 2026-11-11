@@ -34,3 +34,9 @@ export function feeSplit(amount: bigint, feeBps: number) {
   const fee = (amount * BigInt(feeBps)) / 10_000n;
   return { fee, payout: amount - fee };
 }
+
+/** Short display amount without the currency: "4.5", "0.125", "400". */
+export function amountShort(amount: bigint | number | string, c: Currency) {
+  const n = fromBase(amount, c);
+  return n.toLocaleString("en-US", { maximumFractionDigits: c === "SOL" ? (n < 1 ? 3 : 2) : 0 });
+}

@@ -18,6 +18,7 @@ export default function Header() {
         <nav className="nav">
           <Link href="/#board">Find work</Link>
           <Link href="/post">Post a gig</Link>
+          <Link href="/leaderboard">Leaderboard</Link>
           <Link href="/how-it-works" className="hide-sm">How it works</Link>
         </nav>
         <WalletButton />

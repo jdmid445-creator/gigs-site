@@ -16,7 +16,7 @@ export const GET = handle(async (_req: Request, ctx: Ctx) => {
   const role = roleOf(gig, wallet);
   if (gig.hidden && role === "visitor") return json({ error: "Gig not found" }, 404);
 
-  const [{ data: poster }, { data: events }, apps, subs, disp, myApp] = await Promise.all([
+  const [{ data: poster }, { data: events }, apps, subs, disp, myApp, { data: reviews }] = await Promise.all([
     db().from("profiles").select("wallet,handle,x_handle").eq("wallet", gig.poster).maybeSingle(),
     db().from("events").select("kind,actor,tx,created_at").eq("gig_id", id).order("created_at"),
     role === "poster" || role === "referee"
@@ -31,6 +31,9 @@ export const GET = handle(async (_req: Request, ctx: Ctx) => {
     wallet
       ? db().from("applications").select("pitch").eq("gig_id", id).eq("applicant", wallet).maybeSingle()
       : Promise.resolve({ data: null }),
+    gig.status === "paid"
+      ? db().from("reviews").select("author, subject, rating, body, created_at").eq("gig_id", id)
+      : Promise.resolve({ data: [] as { author: string; subject: string; rating: number; body: string; created_at: string }[] }),
   ]);
 
   // Who has already signed each proposal (so the UI knows which button to show).
@@ -65,5 +68,6 @@ export const GET = handle(async (_req: Request, ctx: Ctx) => {
     release,
     refund,
     feeBps: FEE_BPS,
+    reviews: reviews ?? [],
   });
 });
