@@ -15,12 +15,12 @@ const MUTED = "#79808c";
 let fonts: { name: string; data: Buffer; weight: 400 | 500 | 600; style: "normal" }[] | null = null;
 export async function ogFonts() {
   if (fonts) return fonts;
-  const f = (w: 400 | 500 | 600) => readFile(join(process.cwd(), `src/app/fonts/mona-sans-latin-${w}-normal.woff`));
+  const f = (w: 400 | 500 | 600) => readFile(join(process.cwd(), `src/app/fonts/geist-latin-${w}-normal.woff`));
   const [a, b, c] = await Promise.all([f(400), f(500), f(600)]);
   fonts = [
-    { name: "Mona Sans", data: a, weight: 400, style: "normal" },
-    { name: "Mona Sans", data: b, weight: 500, style: "normal" },
-    { name: "Mona Sans", data: c, weight: 600, style: "normal" },
+    { name: "Geist", data: a, weight: 400, style: "normal" },
+    { name: "Geist", data: b, weight: 500, style: "normal" },
+    { name: "Geist", data: c, weight: 600, style: "normal" },
   ];
   return fonts;
 }
@@ -66,7 +66,7 @@ function logoSrc() {
 /** The shared frame: logo top left, content on the left, GIGS standing on the right, cut at the bottom edge. */
 export function Card({ children, mood = "idle", corner }: { children: React.ReactNode; mood?: "idle" | "happy"; corner?: React.ReactNode }) {
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", background: BG, fontFamily: "Mona Sans", color: INK, position: "relative" }}>
+    <div style={{ width: "100%", height: "100%", display: "flex", background: BG, fontFamily: "Geist", color: INK, position: "relative" }}>
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "56px 0 56px 64px", width: 760 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}

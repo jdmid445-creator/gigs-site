@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/components/Providers";
 import GigRow from "@/components/Slip";
@@ -19,6 +19,16 @@ export default function PostGig() {
   const [days, setDays] = useState(7);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+
+  // Prefill from the quick-post card on the homepage
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("title")) setTitle(q.get("title")!.slice(0, 90));
+    if (q.get("amount")) setAmount(q.get("amount")!);
+    if (q.get("currency") === "USDC" || q.get("currency") === "SOL") setCurrency(q.get("currency") as Currency);
+    const c = q.get("category");
+    if (c && (CATEGORIES as readonly string[]).includes(c)) setCategory(c);
+  }, []);
 
   let preview = "0";
   try {

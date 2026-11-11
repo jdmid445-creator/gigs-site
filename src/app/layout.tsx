@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import "@fontsource-variable/mona-sans/wdth.css";
+import "@fontsource-variable/geist";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import Header, { Mark } from "@/components/Header";
+import CopyCA from "@/components/CopyCA";
 import { SITE_NAME, CLUSTER } from "@/lib/config";
 
 const SITE_URL =
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#eceef1",
+  themeColor: "#f2f2ef",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -33,11 +34,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>{children}</main>
           <footer className="site-footer">
             <div className="wrap footer-row">
-              <span className="brand"><Mark />{SITE_NAME}</span>
-              {CLUSTER === "devnet" && <span>Test network, no real money moves</span>}
-              <Link href="/how-it-works">How escrow works</Link>
-              <a href="https://squads.so" target="_blank" rel="noreferrer">Vaults by Squads</a>
+              <Link href="/" className="brand"><Mark />{SITE_NAME}</Link>
+              <nav className="footer-links" aria-label="Footer">
+                <Link href="/#board">Gigs</Link>
+                <Link href="/leaderboard">Leaderboard</Link>
+                <Link href="/how-it-works">Docs</Link>
+                <a href="https://squads.so" target="_blank" rel="noreferrer">Squads</a>
+              </nav>
+              <CopyCA />
             </div>
+            <p className="wrap fine-print">
+              Escrow runs on Squads vaults on Solana.{CLUSTER === "devnet" ? " This is the test network: no real money moves." : ""} Not financial advice.
+            </p>
           </footer>
         </Providers>
       </body>

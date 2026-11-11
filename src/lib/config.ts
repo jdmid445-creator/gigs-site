@@ -1,6 +1,9 @@
 import { PublicKey } from "@solana/web3.js";
 
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Gigs";
+/** The coin's contract address, shown in the header once it launches. */
+export const CA = process.env.NEXT_PUBLIC_CA || "";
+export const X_URL = process.env.NEXT_PUBLIC_X_URL || "";
 
 export type Cluster = "mainnet-beta" | "devnet";
 export const CLUSTER: Cluster =

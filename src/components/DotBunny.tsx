@@ -144,7 +144,8 @@ export default function DotBunny({ className = "" }: { className?: string }) {
     };
     const A = { body: mk(), eyes: mk() };
     const B = { body: mk(), eyes: mk() };
-    let quietY = 0.3, quietH = 0.12, quietW = 0.24, quietX = 0.5;
+    let quietY = 0.3, boardBottom = 0;
+    const quietH = 0.12, quietW = 0.24, quietX = 0.5;
 
     let W = 0, H = 0, DPR = 1, step = 6, rowStep = 12, R = 3, cols = 0, rows = 0;
     let seeds = new Float32Array(0);
@@ -159,8 +160,8 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       canvas.width = Math.round(W * DPR);
       canvas.height = Math.round(H * DPR);
       const wide = W >= 900;
-      step = Math.max(5, W / (wide ? 240 : 150));
-      rowStep = step * 1.7;
+      step = Math.max(4.5, W / (wide ? 280 : 86));
+      rowStep = step * 1.6;
       R = step * 0.48;
       cols = Math.ceil(W / step);
       rows = Math.ceil(H / rowStep);
@@ -169,26 +170,14 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) seeds[j * cols + i] = 0.55 * hash(i, j) + 0.45 * hash(j * 3.1, 7.7);
       const copy = canvas.parentElement?.querySelector<HTMLElement>("[data-copy]");
       const cr = copy?.getBoundingClientRect();
-      const SHOWN = 501; // ear tips (y 14) down to just under his tool belt (y 515)
-      if (wide) {
-        // A scene: GIGS fills the right side, cropped under his belt, waving at you.
-        k = (H * 0.94) / SHOWN;
-        const cx = Math.max(W * 0.7, (cr ? cr.right - r.left : W * 0.5) + 180 * k);
-        ox = cx - 200 * k;
-        oy = H - 515 * k;
-      } else {
-        // Phones: under the copy, as big as fits, cropped at the bottom.
-        const top = cr ? cr.bottom - r.top + 24 : H * 0.5;
-        k = Math.min((H - top) / 380, (W * 1.05) / 330);
-        ox = W / 2 - 205 * k;
-        oy = top - 14 * k;
-      }
-      if (cr) {
-        quietY = (cr.top + cr.height / 2 - r.top) / H;
-        quietH = cr.height / 2 / H + 0.03;
-        quietW = cr.width / 2 / W + 0.03;
-        quietX = (cr.left + cr.width / 2 - r.left) / W;
-      }
+      // The LED board fills everything above the copy; GIGS stands in the middle of it, cut off under his belt.
+      const top = 60;
+      boardBottom = cr ? cr.top - r.top - 8 : H * 0.6;
+      const SHOWN = 501; // ear tips (y 14) to just under his tool belt (y 515)
+      k = Math.min((boardBottom - top) / SHOWN, (W * 0.9) / 380);
+      ox = W * (wide ? 0.56 : 0.5) - 205 * k;
+      oy = boardBottom - 515 * k;
+      quietY = -10;
     };
 
     const fieldPose = (f: typeof A, pose: Pose, breathe: number) => {
@@ -225,9 +214,12 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       ctx.clearRect(0, 0, W, H);
       const ink = new Path2D();
       const lime = new Path2D();
+      const off = new Path2D();
+      const offR = R * 0.2;
       for (let j = 0; j < rows; j++) {
         const shift = !still && hash(j, tick) > 0.975 ? Math.round((hash(tick, j) - 0.5) * 8) : 0;
         const cy = (j + 0.5) * rowStep;
+        if (cy > boardBottom + 2) break; // nothing below the board edge
         for (let i = 0; i < cols; i++) {
           const si = Math.min(cols - 1, Math.max(0, i - shift));
           const idx = j * cols + si;
@@ -237,6 +229,12 @@ export default function DotBunny({ className = "" }: { className?: string }) {
           const lum = f.body[idx * 4] / 255;
           const eye = f.eyes[idx * 4] < 128;
           let v = eye ? 1 : Math.min(1, Math.max(0, (1 - lum - 0.16) / 0.42));
+          if (v <= 0.02 && cy < boardBottom) {
+            // an unlit LED, fading out toward the copy
+            const fade = Math.min(1, (boardBottom - cy) / 120);
+            if (fade > 0.2 && hash(i, j * 1.7) < fade) { off.moveTo((i + 0.5) * step + offR, cy); off.arc((i + 0.5) * step, cy, offR, 0, Math.PI * 2); }
+            continue;
+          }
           // keep the copy readable: no dots behind the headline block
           const qx = ((i + 0.5) / cols - quietX) / quietW, qy = ((j + 0.5) / rows - quietY) / quietH;
           v *= smooth(0.95, 1.2, Math.hypot(qx, qy));
@@ -258,6 +256,8 @@ export default function DotBunny({ className = "" }: { className?: string }) {
           p.arc(cx, cy, r, 0, Math.PI * 2);
         }
       }
+      ctx.fillStyle = "rgba(17, 19, 24, 0.16)";
+      ctx.fill(off);
       ctx.fillStyle = INK;
       ctx.fill(ink);
       ctx.fillStyle = LIME;

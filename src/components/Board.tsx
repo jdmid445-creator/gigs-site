@@ -5,7 +5,6 @@ import GigRow, { SlipGig } from "./Slip";
 import { CATEGORIES } from "@/lib/config";
 import { api, ago, short } from "@/lib/client";
 import Bunny from "./Bunny";
-import LiveFeed from "./LiveFeed";
 
 type Gig = SlipGig & { poster: string; description?: string };
 type Res = { gigs: Gig[]; totals: { lockedSol: number; lockedUsdc: number; paidCount: number } };
@@ -43,8 +42,7 @@ export default function Board() {
 
   const t = data?.totals;
   return (
-    <section className="board" id="board">
-      <div className="wrap">
+    <div className="board">
         <div className="board-bar">
           <div className="tabs" role="group" aria-label="Status">
             {TABS.map((x) => (
@@ -63,8 +61,6 @@ export default function Board() {
           ))}
         </div>
 
-        <div className="board-grid">
-          <div className="board-main">
             {err && (
               <div className="empty">
                 <h3>The board didn&apos;t load</h3>
@@ -107,10 +103,6 @@ export default function Board() {
                 <span><b>{t.paidCount}</b>gigs paid out</span>
               </div>
             )}
-          </div>
-          <LiveFeed />
-        </div>
-      </div>
-    </section>
+  </div>
   );
 }
