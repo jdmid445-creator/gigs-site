@@ -4,6 +4,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletReadyState } from "@solana/wallet-adapter-base";
 import { useSession } from "./Providers";
 import { friendlyWalletError, short } from "@/lib/client";
+import { CLUSTER } from "@/lib/config";
 
 export default function WalletButton() {
   const { wallet, loading, signIn, signOut, pickerOpen, setPickerOpen } = useSession();
@@ -76,6 +77,11 @@ export default function WalletButton() {
             <p className="muted">
               You&apos;ll sign a message to prove the wallet is yours. It&apos;s free and doesn&apos;t send anything.
             </p>
+            {CLUSTER === "devnet" && (
+              <p className="hint">
+                The site is in test mode on Solana devnet. Switch Phantom to devnet in Settings, Developer settings, Testnet mode.
+              </p>
+            )}
             {installed.length ? (
               <ul className="wallet-list">
                 {installed.map((w) => (

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import WalletButton from "./WalletButton";
-import { SITE_NAME, CLUSTER } from "@/lib/config";
-import Bunny from "./Bunny";
+import { SITE_NAME } from "@/lib/config";
+import Logo from "./Logo";
 
-export function Mark({ id = "gigs-logo" }: { id?: string }) {
-  return <Bunny size={34} id={id} crop ground={false} title="" />;
+export function Mark() {
+  return <Logo size={22} />;
 }
 
 export default function Header() {
@@ -14,7 +14,6 @@ export default function Header() {
         <Link href="/" className="brand">
           <Mark />
           {SITE_NAME}
-          {CLUSTER === "devnet" && <span className="net" title="Test network: no real money moves">Devnet</span>}
         </Link>
         <nav className="nav">
           <Link href="/#board">Find work</Link>
