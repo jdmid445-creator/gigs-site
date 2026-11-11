@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>{children}</main>
           <footer className="site-footer">
             <div className="wrap footer-row">
-              <span className="brand"><Mark />{SITE_NAME}</span>
+              <span className="brand"><Mark id="gigs-footer" />{SITE_NAME}</span>
               <Link href="/how-it-works">How escrow works</Link>
               <a href="https://squads.so" target="_blank" rel="noreferrer">Vaults by Squads</a>
             </div>

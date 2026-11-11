@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE_NAME, FEE_BPS } from "@/lib/config";
+import GuardBunny from "@/components/GuardBunny";
 
 export const metadata = { title: `How it works | ${SITE_NAME}` };
 
@@ -15,7 +16,8 @@ export default function HowItWorks() {
           <a href="#allowed">What&apos;s allowed</a>
           <a href="#fees">Fees</a>
         </nav>
-        <article>
+        <article className="has-guard">
+          <GuardBunny variant="docs" intro="Let me show you around." />
           <h1 id="overview">How {SITE_NAME} works</h1>
           <p>
             {SITE_NAME} is a job board for online crypto work. People post gigs with a budget in SOL or USDC, workers apply,

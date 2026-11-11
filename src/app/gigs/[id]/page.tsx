@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useSession } from "@/components/Providers";
 import { Stamp, amountParts } from "@/components/Slip";
+import GuardBunny from "@/components/GuardBunny";
+import Bunny from "@/components/Bunny";
 import { api, ago, friendlyWalletError, short, signAndSend } from "@/lib/client";
 import { explorerAccount, explorerTx, squadsVaultUrl } from "@/lib/config";
 import { Currency, fromBase } from "@/lib/money";
@@ -137,7 +139,18 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
         <Link href="/#board" className="back">All gigs</Link>
         <div className="gig-grid">
           <div style={{ display: "grid", gap: 22 }}>
-            <div className="panel gig-head">
+            <div className="panel gig-head has-guard">
+              <GuardBunny
+                variant="gig"
+                mood={g.status === "paid" ? "happy" : "idle"}
+                intro={
+                  g.status === "paid" ? "Paid out. Nice work."
+                  : g.status === "submitted" ? "Work's in. Check it, then sign."
+                  : inEscrow ? "Budget's locked. I'm watching it."
+                  : g.status === "open" ? "Money stays with the poster until someone's hired."
+                  : ""
+                }
+              />
               <div className="head-row">
                 <Stamp status={g.status} disputed={g.disputed} />
                 <span className="tag">{g.category}</span>
@@ -265,7 +278,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     const role = d!.role;
 
     if (g.status === "paid")
-      return <div className="panel"><div className="notice good">Paid. The vault sent {amt} to the worker.</div></div>;
+      return <div className="panel"><div className="notice good"><Bunny size={84} id="gigs-paid" mood="happy" title="GIGS celebrating" />Paid. The vault sent {amt} to the worker.</div></div>;
     if (g.status === "refunded")
       return <div className="panel"><div className="notice">Refunded. The budget went back to the poster.</div></div>;
     if (g.status === "cancelled")

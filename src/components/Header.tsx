@@ -1,15 +1,10 @@
 import Link from "next/link";
 import WalletButton from "./WalletButton";
 import { SITE_NAME, CLUSTER } from "@/lib/config";
+import Bunny from "./Bunny";
 
-export function Mark() {
-  return (
-    <span className="mark" aria-hidden>
-      <i />
-      <i />
-      <i />
-    </span>
-  );
+export function Mark({ id = "gigs-logo" }: { id?: string }) {
+  return <Bunny size={34} id={id} crop ground={false} title="" />;
 }
 
 export default function Header() {

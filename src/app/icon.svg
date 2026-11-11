@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="70 14 260 300"><defs>
+        <radialGradient id="g-b" cx="38%" cy="26%" r="80%">
+          <stop offset="0%" stop-color="#8d95a5" />
+          <stop offset="52%" stop-color="#3b414d" />
+          <stop offset="100%" stop-color="#14171d" />
+        </radialGradient>
+        <radialGradient id="g-e" cx="40%" cy="20%" r="90%">
+          <stop offset="0%" stop-color="#7d8595" />
+          <stop offset="60%" stop-color="#3b414d" />
+          <stop offset="100%" stop-color="#1b1f26" />
+        </radialGradient>
+        <clipPath id="g-above">
+          <rect x="0" y="0" width="400" height="300" />
+        </clipPath>
+      </defs>
+            <g clip-path="url(#g-above)">
+        <g class="bunny-body">
+          <g class="bunny-ear-l">
+            <path d="M150 168 C124 120 114 52 134 26 C154 2 182 40 186 100 C188 130 186 150 182 166 Z" fill="url(#g-e)" />
+            <path d="M156 150 C140 112 134 64 146 46 C158 30 170 66 172 104 C173 124 171 140 168 150 Z" fill="#ff8fb8" />
+          </g>
+          <g class="bunny-ear-r">
+            <path d="M218 166 C214 120 226 64 254 40 C268 28 284 34 282 52 C280 72 262 122 248 172 Z" fill="url(#g-e)" />
+            <path d="M228 150 C228 116 238 78 256 58 C264 50 272 54 270 64 C266 84 254 120 244 154 Z" fill="#ff8fb8" />
+          </g>
+          <path d="M200 132 C282 132 322 190 322 262 C322 326 276 354 200 354 C124 354 78 326 78 262 C78 190 118 132 200 132 Z" fill="url(#g-b)" />
+          <path d="M200 192 C246 192 276 222 276 256 C276 290 244 310 200 310 C156 310 124 290 124 256 C124 222 154 192 200 192 Z" fill="#0a0c10" />
+          
+            <g class="bunny-eyes">
+              <ellipse class="bunny-eye" cx="174" cy="240" rx="10" ry="16" fill="#c9f23d" />
+              <ellipse class="bunny-eye" cx="226" cy="240" rx="10" ry="16" fill="#c9f23d" />
+            </g>
+                              <path d="M187 266 C187 260 213 260 213 266 C213 272 205 278 200 278 C195 278 187 272 187 266 Z" fill="#ff8fb8" />
+          <rect x="190.5" y="281" width="9" height="12" rx="2.5" fill="#f4f5f7" />
+          <rect x="200.5" y="281" width="9" height="12" rx="2.5" fill="#f4f5f7" />
+          <ellipse class="bunny-cheek" cx="152" cy="268" rx="11" ry="5.5" fill="#ff8fb8" />
+          <ellipse class="bunny-cheek" cx="248" cy="268" rx="11" ry="5.5" fill="#ff8fb8" />
+        </g>
+      </g>
+      <g class="bunny-paws">
+        <ellipse cx="128" cy="302" rx="32" ry="17" fill="#4a515e" />
+        <ellipse cx="272" cy="302" rx="32" ry="17" fill="#4a515e" />
+      </g>
+    </svg>

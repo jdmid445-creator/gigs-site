@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/components/Providers";
 import GigRow from "@/components/Slip";
+import GuardBunny from "@/components/GuardBunny";
 import { CATEGORIES, MIN_AMOUNT, FEE_BPS } from "@/lib/config";
 import { api } from "@/lib/client";
 import { toBase, Currency } from "@/lib/money";
@@ -47,7 +48,8 @@ export default function PostGig() {
     <div className="page">
       <div className="wrap">
         <div className="gig-grid">
-          <form className="panel form" onSubmit={submit}>
+          <form className="panel form has-guard" onSubmit={submit}>
+            <GuardBunny variant="post" intro="Say what “done” means. Saves a fight later." />
             <div style={{ display: "grid", gap: 10 }}>
               <h1>Post a gig</h1>
               <p className="muted">

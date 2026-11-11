@@ -4,6 +4,7 @@ import Link from "next/link";
 import GigRow, { SlipGig } from "./Slip";
 import { CATEGORIES } from "@/lib/config";
 import { api, ago, short } from "@/lib/client";
+import Bunny from "./Bunny";
 
 type Gig = SlipGig & { poster: string; description?: string };
 type Res = { gigs: Gig[]; totals: { lockedSol: number; lockedUsdc: number; paidCount: number } };
@@ -73,7 +74,8 @@ export default function Board() {
           </div>
         )}
         {data && shown.length === 0 && (
-          <div className="empty">
+          <div className="empty empty-bunny">
+            <Bunny size={130} id="gigs-empty" mood="sleep" title="GIGS napping" />
             <h3>{q ? `Nothing matches “${q}”` : status === "open" ? "No open gigs here yet" : "Nothing here yet"}</h3>
             <p className="muted">Post one. Your budget stays in your wallet until you hire someone.</p>
             <Link className="btn primary" href="/post">Post a gig</Link>

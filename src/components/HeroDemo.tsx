@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import GuardBunny from "./GuardBunny";
 
 /**
  * The vault, signing itself: worker approves, poster approves, funds release.
@@ -25,7 +26,8 @@ export default function HeroDemo() {
     { who: "Referee", what: "Only votes in a dispute", on: false },
   ];
   return (
-    <div className="vault" aria-label="Example: a gig budget locked in a 2-of-3 vault">
+    <div className="vault has-guard" aria-label="Example: a gig budget locked in a 2-of-3 vault">
+      <GuardBunny variant="hero" intro="I keep an eye on every vault." />
       <div className="vault-top">
         <span className="vault-title">Logo pack, 3 concepts</span>
       </div>
