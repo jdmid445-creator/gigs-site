@@ -138,6 +138,14 @@ export default function PostGig() {
               />
             </div>
             <p className="hint" style={{ padding: "0 8px" }}>This is how your gig shows up on the board.</p>
+            <div className="side-steps">
+              <h2>After you post</h2>
+              <ol>
+                <li><span className="n">1</span><span><strong>Workers apply</strong>Each sends a pitch and a portfolio link.</span></li>
+                <li><span className="n">2</span><span><strong>You hire one</strong>One signature locks the budget in a 2 of 3 vault.</span></li>
+                <li><span className="n">3</span><span><strong>Work in, money out</strong>You and the worker both approve the payout.</span></li>
+              </ol>
+            </div>
           </aside>
         </div>
       </div>
