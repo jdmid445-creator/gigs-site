@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ id: string }> };
 
 const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
-const money = (n: number) => (n >= 100 ? `$${Math.round(n).toLocaleString("en-US")}` : `$${n.toFixed(2)}`);
+const money = (n: number) => (n === 0 ? "$0" : n >= 100 ? `$${Math.round(n).toLocaleString("en-US")}` : `$${n.toFixed(2)}`);
 const num = (n: number, d = 2) => n.toLocaleString("en-US", { maximumFractionDigits: d });
 const ago = (iso: string) => {
   const d = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 86400000));
@@ -62,7 +62,7 @@ export default async function UserPage({ params }: Props) {
                 <div>
                   <h1>{name}</h1>
                   <p className="muted small">
-                    <a href={explorerAccount(wallet)} target="_blank" rel="noreferrer">{short(wallet)}</a>
+                    <a href={explorerAccount(wallet)} target="_blank" rel="noreferrer">{profile?.handle ? short(wallet) : "View on Solscan"}</a>
                     {profile?.x_handle && <>{"  "}<a href={`https://x.com/${profile.x_handle}`} target="_blank" rel="noreferrer">X @{profile.x_handle}</a></>}
                     {profile && <>{"  "}Joined {new Date(profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</>}
                   </p>
