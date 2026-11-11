@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import GuardBunny from "./GuardBunny";
 
 /**
  * The vault signing itself once when it comes into view: worker signs, poster signs, it pays out.
@@ -42,9 +41,8 @@ export default function HeroDemo() {
     { who: "Referee", what: "Only votes in a dispute", on: false },
   ];
   return (
-    <div ref={ref} className="vault has-guard" onClick={play} title="Play again"
+    <div ref={ref} className="vault" onClick={play} title="Play again"
       aria-label="Example: a gig budget locked in a 2-of-3 vault">
-      <GuardBunny variant="hero" intro="I keep an eye on every vault" />
       <div className="vault-top">
         <span className="vault-title">Logo pack, 3 concepts</span>
         <span className="dots" aria-label={`${(f.worker ? 1 : 0) + (f.poster ? 1 : 0)} of 2 signatures`}>
