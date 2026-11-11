@@ -171,8 +171,8 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       const copy = canvas.parentElement?.querySelector<HTMLElement>("[data-copy]");
       const cr = copy?.getBoundingClientRect();
       // The LED board fills everything above the copy; GIGS stands in the middle of it, cut off under his belt.
-      const top = 60;
-      boardBottom = cr ? cr.top - r.top - 8 : H * 0.6;
+      const top = wide ? 58 : 66;
+      boardBottom = cr ? cr.top - r.top - 4 : H * 0.6;
       const SHOWN = 501; // ear tips (y 14) to just under his tool belt (y 515)
       k = Math.min((boardBottom - top) / SHOWN, (W * 0.9) / 380);
       ox = W * (wide ? 0.56 : 0.5) - 205 * k;

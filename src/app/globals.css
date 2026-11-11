@@ -152,9 +152,9 @@ p { margin: 0; text-wrap: pretty; }
 .dots i.on { background: var(--ink); box-shadow: none; }
 
 /* ---------- hero: GIGS in LED dots across the top, headline bottom-left, blurb bottom-right ---------- */
-.hero { position: relative; height: max(640px, calc(100svh - 120px)); margin-top: -62px; display: flex; align-items: flex-end; overflow: hidden; }
+.hero { position: relative; height: max(720px, calc(100svh - 24px)); margin-top: -62px; display: flex; align-items: flex-end; overflow: hidden; }
 .hero-dots { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.hero-inner { position: relative; z-index: 2; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 48px; padding-bottom: 136px; }
+.hero-inner { position: relative; z-index: 2; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 48px; padding-bottom: 88px; }
 .hero-title { white-space: nowrap; font-size: clamp(44px, 5.5vw, 80px); line-height: 0.98; font-weight: 400; letter-spacing: -0.055em; }
 .hero-title span { display: block; }
 .hero-side { display: grid; gap: 22px; justify-items: start; padding-bottom: 8px; max-width: 420px; justify-self: end; }
@@ -162,8 +162,8 @@ p { margin: 0; text-wrap: pretty; }
 .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ---------- the desk: quick post card between how-it-works and right-now ---------- */
-.desk { position: relative; z-index: 3; display: grid; grid-template-columns: 1fr minmax(0, 470px) 1fr; gap: 24px; align-items: stretch; margin-top: -96px; }
-.desk-side { margin-top: 96px; padding: 24px; display: flex; flex-direction: column; border-radius: var(--r-card); background: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 1px var(--hair); }
+.desk { position: relative; z-index: 3; display: grid; grid-template-columns: 1fr minmax(0, 470px) 1fr; gap: 24px; align-items: stretch; margin-top: -48px; }
+.desk-side { margin-top: 48px; padding: 24px; display: flex; flex-direction: column; border-radius: var(--r-card); background: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 1px var(--hair); }
 .side-title { font-size: 15px; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 16px; }
 .hops { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
 .hops li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; font-size: 15px; }
@@ -588,13 +588,13 @@ a.gig-row:hover { background: var(--sunk); }
   .site-header { padding: 10px 0; }
   .header-row { grid-template-columns: 1fr auto; }
   .navpill, .header-end .ca-pill, .icon-btn { display: none; }
-  .hero { height: auto; min-height: 700px; margin-top: -58px; padding-top: 360px; }
-  .hero-inner { grid-template-columns: 1fr; gap: 20px; padding-bottom: 120px; }
+  .hero { height: auto; min-height: 760px; margin-top: -58px; padding-top: 450px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 20px; padding-bottom: 72px; }
   .hero-title { white-space: normal; font-size: clamp(40px, 11.5vw, 54px); }
   .hero-side { justify-self: stretch; max-width: none; }
   .hero-side p { font-size: 16px; }
   .hero-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-  .desk { grid-template-columns: 1fr; margin-top: -80px; gap: 14px; }
+  .desk { grid-template-columns: 1fr; margin-top: -32px; gap: 14px; }
   .desk-main { width: 100%; }
   .tool { padding: 14px; }
   .big-input { font-size: 28px; }
