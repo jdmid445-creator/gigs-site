@@ -2,6 +2,7 @@ import Link from "next/link";
 import WalletButton from "./WalletButton";
 import CopyCA from "./CopyCA";
 import Logo from "./Logo";
+import HeaderShell from "./HeaderShell";
 import { SITE_NAME, X_URL } from "@/lib/config";
 
 export function Mark() {
@@ -10,7 +11,7 @@ export function Mark() {
 
 export default function Header() {
   return (
-    <header className="site-header">
+    <HeaderShell>
       <div className="wrap header-row">
         <Link href="/" className="brand" aria-label={`${SITE_NAME} home`}>
           <Mark />
@@ -32,6 +33,6 @@ export default function Header() {
           <WalletButton />
         </div>
       </div>
-    </header>
+    </HeaderShell>
   );
 }
