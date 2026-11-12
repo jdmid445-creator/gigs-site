@@ -38,7 +38,7 @@ function path(d: string) {
 /** Draws one pose in bunny space into a shade field (dot size) and an accent field (lime dots). */
 function drawPose(body: CanvasRenderingContext2D, acc: CanvasRenderingContext2D, pose: Pose) {
   const shade = body.createRadialGradient(165, 170, 10, 200, 300, 330);
-  shade.addColorStop(0, "#cdcdcd");
+  shade.addColorStop(0, "#b2b2b2");
   shade.addColorStop(0.42, "#727272");
   shade.addColorStop(1, "#101010");
 
@@ -345,8 +345,9 @@ export default function DotBunny({ className = "" }: { className?: string }) {
     };
 
     resize();
-    const late = window.setTimeout(resize, 1400);
-    document.fonts?.ready.then(() => resize());
+    const remeasure = () => { resize(); if (still) render(0); };
+    const late = window.setTimeout(remeasure, 1400);
+    document.fonts?.ready.then(remeasure);
     const ro = new ResizeObserver(() => { resize(); if (still) render(0); });
     ro.observe(canvas);
 
