@@ -588,7 +588,7 @@ a.gig-row:hover { background: var(--sunk); }
   .site-header { padding: 10px 0; }
   .header-row { grid-template-columns: 1fr auto; }
   .navpill, .header-end .ca-pill, .icon-btn { display: none; }
-  .hero { height: auto; min-height: 760px; margin-top: -58px; padding-top: 450px; }
+  .hero { height: auto; min-height: 760px; margin-top: -58px; padding-top: 400px; }
   .hero-inner { grid-template-columns: 1fr; gap: 20px; padding-bottom: 72px; }
   .hero-title { white-space: normal; font-size: clamp(40px, 11.5vw, 54px); }
   .hero-side { justify-self: stretch; max-width: none; }

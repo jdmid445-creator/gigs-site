@@ -144,13 +144,82 @@ export default function DotBunny({ className = "" }: { className?: string }) {
     };
     const A = { body: mk(), eyes: mk() };
     const B = { body: mk(), eyes: mk() };
-    let quietY = 0.3, boardBottom = 0;
-    const quietH = 0.12, quietW = 0.24, quietX = 0.5;
+    let boardBottom = 0;
+    const maskC = document.createElement("canvas");
+    const maskX = maskC.getContext("2d", { willReadFrequently: true })!;
+    let mask: Uint8ClampedArray | null = null;
 
     let W = 0, H = 0, DPR = 1, step = 6, rowStep = 12, R = 3, cols = 0, rows = 0;
     let seeds = new Float32Array(0);
     let k = 1, ox = 0, oy = 0;
     const look = { x: 0, y: 0 }, target = { x: 0, y: 0 };
+
+    /**
+     * Paints a halo around every letter of the headline (and solid blocks around the small copy and
+     * buttons) so the dots fill in between the letters but never touch them. Also returns the
+     * headline's last baseline, which is where GIGS stands.
+     */
+    const measure = () => {
+      const r = canvas.getBoundingClientRect();
+      const copy = canvas.parentElement?.querySelector<HTMLElement>("[data-copy]");
+      maskC.width = Math.max(1, Math.round(W)); maskC.height = Math.max(1, Math.round(H));
+      maskX.clearRect(0, 0, W, H);
+      maskX.fillStyle = maskX.strokeStyle = "#000";
+      maskX.lineJoin = "round";
+      let ground = H * 0.7;
+      if (!copy) { mask = null; return ground; }
+      const range = document.createRange();
+      const halo = step * 1.25 + R;
+      const title = copy.querySelector<HTMLElement>(".hero-title");
+      if (title) {
+        const cs = getComputedStyle(title);
+        maskX.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+        maskX.textBaseline = "alphabetic";
+        maskX.lineWidth = halo * 2;
+        const asc = maskX.measureText("H").fontBoundingBoxAscent || parseFloat(cs.fontSize) * 0.9;
+        const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+        for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+          const text = n.textContent ?? "";
+          // each word is one solid cutout (no stray dots in counters), hugged by the letter halo below
+          for (const m of text.matchAll(/\S+/g)) {
+            range.setStart(n, m.index!); range.setEnd(n, m.index! + m[0].length);
+            const b = range.getBoundingClientRect();
+            const capTop = b.top - r.top + asc - parseFloat(cs.fontSize) * 0.72;
+            maskX.beginPath();
+            maskX.roundRect(b.left - r.left - halo * 0.4, capTop, b.width + halo * 0.8, b.bottom - r.top - capTop, 6);
+            maskX.fill();
+          }
+          for (let c = 0; c < text.length; c++) {
+            if (!text[c].trim()) continue;
+            range.setStart(n, c); range.setEnd(n, c + 1);
+            const b = range.getBoundingClientRect();
+            if (!b.width) continue;
+            const x = b.left - r.left, base = b.top - r.top + asc;
+            maskX.fillText(text[c], x, base);
+            maskX.strokeText(text[c], x, base);
+            ground = base;
+          }
+        }
+      }
+      // small copy and buttons: a clean rounded block, dots stay clear of them entirely
+      for (const el of copy.querySelectorAll<HTMLElement>(".hero-side p, .hero-actions .btn")) {
+        range.selectNodeContents(el);
+        const boxes = el.matches(".btn") ? [el.getBoundingClientRect()] : Array.from(range.getClientRects());
+        for (const b of boxes) {
+          maskX.beginPath();
+          maskX.roundRect(b.left - r.left - halo, b.top - r.top - halo * 0.6, b.width + halo * 2, b.height + halo * 1.2, 14);
+          maskX.fill();
+        }
+      }
+      mask = maskX.getImageData(0, 0, maskC.width, maskC.height).data;
+      return ground;
+    };
+    const masked = (x: number, y: number) => {
+      if (!mask) return false;
+      const xi = Math.round(x), yi = Math.round(y);
+      if (xi < 0 || yi < 0 || xi >= maskC.width || yi >= maskC.height) return false;
+      return mask[(yi * maskC.width + xi) * 4 + 3] > 0;
+    };
 
     const resize = () => {
       const r = canvas.getBoundingClientRect();
@@ -168,16 +237,14 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       for (const f of [A.body, A.eyes, B.body, B.eyes]) { f.c.width = cols; f.c.height = rows; }
       seeds = new Float32Array(cols * rows);
       for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) seeds[j * cols + i] = 0.55 * hash(i, j) + 0.45 * hash(j * 3.1, 7.7);
-      const copy = canvas.parentElement?.querySelector<HTMLElement>("[data-copy]");
-      const cr = copy?.getBoundingClientRect();
-      // The LED board fills everything above the copy; GIGS stands in the middle of it, cut off under his belt.
-      const top = wide ? 58 : 66;
-      boardBottom = cr ? cr.top - r.top - 4 : H * 0.6;
-      const SHOWN = 501; // ear tips (y 14) to just under his tool belt (y 515)
-      k = Math.min((boardBottom - top) / SHOWN, (W * 0.9) / 380);
-      ox = W * (wide ? 0.56 : 0.5) - 205 * k;
-      oy = boardBottom - 515 * k;
-      quietY = -10;
+      // GIGS stands on the headline's last baseline, full height, with the letters cutting through him.
+      const ground = measure();
+      boardBottom = ground;
+      const top = wide ? 62 : 70;
+      const SHOWN = 558 - 14; // ear tips to the soles
+      k = Math.min((ground - top) / SHOWN, (W * (wide ? 0.4 : 0.9)) / 380);
+      ox = W * 0.5 - 200 * k;
+      oy = ground - 558 * k;
     };
 
     const fieldPose = (f: typeof A, pose: Pose, breathe: number) => {
@@ -207,7 +274,7 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       const fa = fieldPose(A, { happy: false, blink, earR: twitch, lift: 0, lx: look.x, ly: look.y, wave: waveA }, breathe);
       const hop = still ? 0 : Math.max(0, Math.sin(Math.min(1, Math.max(0, (t - 5.4) / 0.7)) * Math.PI)) * 22;
       const fb = fieldPose(B, { happy: true, blink: 0, earR: -0.12, lift: 10 + hop, lx: 0, ly: 0, wave: 2.5 + (still ? 0 : 0.25 * Math.sin(t * 10)) }, breathe);
-      const m = still ? 0 : mixAt(t, 4.6, 7.8, 1.3);
+      const m = still ? 0 : mixAt(t, 4.6, 7.8, 0.55);
       const tick = Math.floor(time * 7);
 
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -217,7 +284,7 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       const off = new Path2D();
       const offR = R * 0.2;
       for (let j = 0; j < rows; j++) {
-        const shift = !still && hash(j, tick) > 0.975 ? Math.round((hash(tick, j) - 0.5) * 8) : 0;
+        const shift = !still && hash(j, tick) > 0.994 ? Math.round((hash(tick, j) - 0.5) * 4) : 0;
         const cy = (j + 0.5) * rowStep;
         if (cy > boardBottom + 2) break; // nothing below the board edge
         for (let i = 0; i < cols; i++) {
@@ -229,21 +296,19 @@ export default function DotBunny({ className = "" }: { className?: string }) {
           const lum = f.body[idx * 4] / 255;
           const eye = f.eyes[idx * 4] < 128;
           let v = eye ? 1 : Math.min(1, Math.max(0, (1 - lum - 0.16) / 0.42));
-          if (v <= 0.02 && cy < boardBottom) {
-            // an unlit LED, fading out toward the copy
-            const fade = Math.min(1, (boardBottom - cy) / 120);
-            if (fade > 0.2 && hash(i, j * 1.7) < fade) { off.moveTo((i + 0.5) * step + offR, cy); off.arc((i + 0.5) * step, cy, offR, 0, Math.PI * 2); }
+          const cx0 = (i + 0.5) * step;
+          if (masked(cx0, cy)) continue; // the letters stay clear
+          if (v <= 0.02) {
+            // an unlit LED, fading out toward the bottom of the board
+            const fade = Math.min(1, (boardBottom - cy) / 160);
+            if (fade > 0.2 && hash(i, j * 1.7) < fade) { off.moveTo(cx0 + offR, cy); off.arc(cx0, cy, offR, 0, Math.PI * 2); }
             continue;
           }
-          // keep the copy readable: no dots behind the headline block
-          const qx = ((i + 0.5) / cols - quietX) / quietW, qy = ((j + 0.5) / rows - quietY) / quietH;
-          v *= smooth(0.95, 1.2, Math.hypot(qx, qy));
-          if (v <= 0) continue;
           if (!still) {
             v *= 0.9 + 0.1 * Math.sin(time * 3.2 + seed * 40);
             if (m > 0.001 && m < 0.999) {
               const d = Math.abs(seed - m);
-              if (d < 0.12) v *= (d / 0.12) * (hash(i + tick, j) > 0.4 ? 1 : 0.3);
+              if (d < 0.06) v *= d / 0.06;
             }
           }
           let level = 0;
@@ -265,6 +330,8 @@ export default function DotBunny({ className = "" }: { className?: string }) {
     };
 
     resize();
+    const late = window.setTimeout(resize, 1400);
+    document.fonts?.ready.then(() => resize());
     const ro = new ResizeObserver(() => { resize(); if (still) render(0); });
     ro.observe(canvas);
 
@@ -291,7 +358,7 @@ export default function DotBunny({ className = "" }: { className?: string }) {
     else raf = requestAnimationFrame(loop);
     (window as unknown as { __gigsRender?: (t: number) => void }).__gigsRender = render;
 
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); window.removeEventListener("pointermove", onMove); };
+    return () => { clearTimeout(late); cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); window.removeEventListener("pointermove", onMove); };
   }, []);
 
   return <canvas ref={ref} className={className} role="img" aria-label="GIGS the bunny drawn in dots, waving" />;
