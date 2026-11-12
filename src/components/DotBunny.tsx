@@ -169,6 +169,15 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       let ground = H * 0.7;
       if (!copy) { mask = null; return ground; }
       const range = document.createRange();
+      // the copy slides up on load; measure where it ends up, not where it is mid-animation
+      const settle = (node: Node) => {
+        const el = (node instanceof HTMLElement ? node : node.parentElement)?.closest<HTMLElement>(".rise");
+        if (!el) return { dx: 0, dy: 0 };
+        const t = getComputedStyle(el).transform;
+        if (!t || t === "none") return { dx: 0, dy: 0 };
+        const m = new DOMMatrix(t);
+        return { dx: m.m41, dy: m.m42 };
+      };
       const halo = step * 1.25 + R;
       const title = copy.querySelector<HTMLElement>(".hero-title");
       if (title) {
@@ -183,7 +192,9 @@ export default function DotBunny({ className = "" }: { className?: string }) {
           // each word is one solid cutout (no stray dots in counters), hugged by the letter halo below
           for (const m of text.matchAll(/\S+/g)) {
             range.setStart(n, m.index!); range.setEnd(n, m.index! + m[0].length);
-            const b = range.getBoundingClientRect();
+            const o = settle(n);
+            const b0 = range.getBoundingClientRect();
+            const b = new DOMRect(b0.x - o.dx, b0.y - o.dy, b0.width, b0.height);
             const capTop = b.top - r.top + asc - parseFloat(cs.fontSize) * 0.72;
             maskX.beginPath();
             maskX.roundRect(b.left - r.left - halo * 0.4, capTop, b.width + halo * 0.8, b.bottom - r.top - capTop, 6);
@@ -192,8 +203,10 @@ export default function DotBunny({ className = "" }: { className?: string }) {
           for (let c = 0; c < text.length; c++) {
             if (!text[c].trim()) continue;
             range.setStart(n, c); range.setEnd(n, c + 1);
-            const b = range.getBoundingClientRect();
-            if (!b.width) continue;
+            const o = settle(n);
+            const b0 = range.getBoundingClientRect();
+            if (!b0.width) continue;
+            const b = new DOMRect(b0.x - o.dx, b0.y - o.dy, b0.width, b0.height);
             const x = b.left - r.left, base = b.top - r.top + asc;
             maskX.fillText(text[c], x, base);
             maskX.strokeText(text[c], x, base);
@@ -204,8 +217,10 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       // small copy and buttons: a clean rounded block, dots stay clear of them entirely
       for (const el of copy.querySelectorAll<HTMLElement>(".hero-side p, .hero-actions .btn")) {
         range.selectNodeContents(el);
-        const boxes = el.matches(".btn") ? [el.getBoundingClientRect()] : Array.from(range.getClientRects());
-        for (const b of boxes) {
+        const o = settle(el);
+        const raw = el.matches(".btn") ? [el.getBoundingClientRect()] : Array.from(range.getClientRects());
+        for (const b0 of raw) {
+          const b = new DOMRect(b0.x - o.dx, b0.y - o.dy, b0.width, b0.height);
           maskX.beginPath();
           maskX.roundRect(b.left - r.left - halo, b.top - r.top - halo * 0.6, b.width + halo * 2, b.height + halo * 1.2, 14);
           maskX.fill();
@@ -243,7 +258,7 @@ export default function DotBunny({ className = "" }: { className?: string }) {
       const top = wide ? 62 : 70;
       const SHOWN = 558 - 14; // ear tips to the soles
       k = Math.min((ground - top) / SHOWN, (W * (wide ? 0.4 : 0.9)) / 380);
-      ox = W * 0.5 - 200 * k;
+      ox = W * (wide ? 0.545 : 0.5) - 200 * k;
       oy = ground - 558 * k;
     };
 
