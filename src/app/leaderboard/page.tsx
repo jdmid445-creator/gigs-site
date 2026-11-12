@@ -17,13 +17,13 @@ type Entry = { wallet: string; handle: string | null; usd: number; done: number 
 
 function Board({ title, sub, rows, noun }: { title: string; sub: string; rows: Entry[]; noun: string }) {
   return (
-    <section className="panel">
+    <section className="panel pad">
       <div>
-        <h2>{title}</h2>
-        <p className="hint">{sub}</p>
+        <h2 className="panel-title">{title}</h2>
+        <p className="hint" style={{ marginTop: 4 }}>{sub}</p>
       </div>
       {rows.length === 0 ? (
-        <div className="empty-bunny">
+        <div className="empty" style={{ margin: 0 }}>
           <Bunny size={96} id={`gigs-lb-${noun}`} mood="sleep" title="" />
           <p className="muted">Nobody yet. The first paid gig puts someone here.</p>
         </div>
@@ -34,8 +34,10 @@ function Board({ title, sub, rows, noun }: { title: string; sub: string; rows: E
               <Link href={`/u/${r.handle ?? r.wallet}`}>
                 <span className="rank">{i + 1}</span>
                 <Avatar wallet={r.wallet} size={32} />
-                <span className="rank-name">{r.handle ? `@${r.handle}` : short(r.wallet)}</span>
-                <span className="rank-meta">{r.done} {noun}{r.done === 1 ? "" : "s"}</span>
+                <span className="rank-name">
+                  <strong>{r.handle ? `@${r.handle}` : short(r.wallet)}</strong>
+                  <span>{r.done} {noun}{r.done === 1 ? "" : "s"}</span>
+                </span>
                 <span className="rank-usd">{money(r.usd)}</span>
               </Link>
             </li>
@@ -49,19 +51,19 @@ function Board({ title, sub, rows, noun }: { title: string; sub: string; rows: E
 export default async function Leaderboard() {
   const { workers, posters, solPrice } = await getLeaderboard();
   return (
-    <div className="page">
-      <div className="wrap" style={{ display: "grid", gap: 24 }}>
-        <div style={{ display: "grid", gap: 8 }}>
+    <div className="page container">
+      <div className="page-head">
+        <div>
           <h1>Leaderboard</h1>
-          <p className="muted">
-            Only gigs that were paid out of escrow count. SOL is valued at today&apos;s price
-            {solPrice ? ` ($${solPrice.toFixed(2)})` : ""}.
+          <p className="lede">
+            Only gigs paid out of escrow count. SOL is valued at today&apos;s price{solPrice ? ` ($${solPrice.toFixed(2)})` : ""}.
           </p>
         </div>
-        <div className="lb-grid">
-          <Board title="Top earners" sub="Workers ranked by what they've been paid" rows={workers} noun="gig" />
-          <Board title="Top posters" sub="Posters ranked by what they've paid out" rows={posters} noun="payout" />
-        </div>
+        <a href="/post" className="btn btn-ink">Post a gig</a>
+      </div>
+      <div className="lb">
+        <Board title="Top earners" sub="Workers ranked by what they've been paid" rows={workers} noun="gig" />
+        <Board title="Top posters" sub="Posters ranked by what they've paid out" rows={posters} noun="payout" />
       </div>
     </div>
   );

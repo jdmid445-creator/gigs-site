@@ -34,14 +34,18 @@ export default function MyGigs() {
     });
   }, [wallet]);
 
-  if (loading) return <div className="page"><div className="wrap"><p className="muted">Loading…</p></div></div>;
+  if (loading) return <div className="page container"><p className="muted">Loading…</p></div>;
   if (!wallet)
     return (
-      <div className="page"><div className="wrap" style={{ display: "grid", gap: 16, justifyItems: "start" }}>
-        <h1>Your gigs</h1>
-        <p className="muted">Sign in with your wallet to see gigs you posted and work you&apos;re doing.</p>
-        <button className="btn" onClick={() => signIn().catch(() => setPickerOpen(true))}>Sign in</button>
-      </div></div>
+      <div className="page container">
+        <div className="page-head">
+          <div>
+            <h1>Your gigs</h1>
+            <p className="lede">Sign in with your wallet to see gigs you posted and work you&apos;re doing.</p>
+          </div>
+          <button className="btn btn-ink" onClick={() => signIn().catch(() => setPickerOpen(true))}>Sign in</button>
+        </div>
+      </div>
     );
 
   const posted = me?.gigs.filter((g) => g.poster === wallet) ?? [];
@@ -63,45 +67,63 @@ export default function MyGigs() {
   }
 
   return (
-    <div className="page">
-      <div className="wrap gig-grid">
-        <div style={{ display: "grid", gap: 30 }}>
-          <div className="head-row" style={{ justifyContent: "space-between" }}>
-            <h1>Your gigs</h1>
-            <Link className="btn line sm" href={`/u/${wallet}`}>View public profile</Link>
+    <div className="page container">
+      <div className="page-head">
+        <div>
+          <h1>Your gigs</h1>
+          <p className="lede">Work you&apos;re doing, gigs you posted, and the profile posters see when you apply.</p>
+        </div>
+        <Link className="btn btn-soft" href={`/u/${wallet}`}>View public profile</Link>
+      </div>
+      <div className="split">
+        <div className="stack">
+          {me?.isReferee && <div className="notice">You&apos;re the referee. <Link className="inline-link" href="/admin">Open the dispute queue</Link></div>}
+          <div className="board">
+            <div className="board-head"><h2 className="panel-title">Work you&apos;re doing</h2></div>
+            {working.length ? <div className="gig-list">{working.map((g) => <GigRow key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)}</div>
+              : <div className="empty"><p className="muted">Nothing yet.</p><Link className="btn btn-soft btn-sm" href="/#board">Find a gig</Link></div>}
           </div>
-          {me?.isReferee && <div className="notice">You&apos;re the referee. <Link href="/admin">Open the dispute queue</Link></div>}
-          <section style={{ display: "grid", gap: 12 }}>
-            <h2>Work you&apos;re doing</h2>
-            {working.length ? <div className="list">{working.map((g) => <GigRow key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)}</div>
-              : <p className="muted">Nothing yet. <Link href="/#board">Find a gig</Link></p>}
-          </section>
           {pending.length > 0 && (
-            <section style={{ display: "grid", gap: 8 }}>
-              <h2>Applications waiting</h2>
+            <div className="panel pad">
+              <h2 className="panel-title">Applications waiting</h2>
               {pending.map((a) => (
-                <Link key={a.gig_id} href={`/gigs/${a.gig_id}`} className="small">{a.gigs!.title}, applied {ago(a.created_at)}</Link>
+                <Link key={a.gig_id} href={`/gigs/${a.gig_id}`} className="item">
+                  <span style={{ fontWeight: 500 }}>{a.gigs!.title}</span>
+                  <span className="hint">Applied {ago(a.created_at)}</span>
+                </Link>
               ))}
-            </section>
+            </div>
           )}
-          <section style={{ display: "grid", gap: 12 }}>
-            <h2>Gigs you posted</h2>
-            {posted.length ? <div className="list">{posted.map((g) => <GigRow key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)}</div>
-              : <p className="muted">You haven&apos;t posted anything. <Link href="/post">Post a gig</Link></p>}
-          </section>
+          <div className="board">
+            <div className="board-head"><h2 className="panel-title">Gigs you posted</h2></div>
+            {posted.length ? <div className="gig-list">{posted.map((g) => <GigRow key={g.id} gig={g} meta={<span>updated {ago(g.updated_at)}</span>} />)}</div>
+              : <div className="empty"><p className="muted">You haven&apos;t posted anything.</p><Link className="btn btn-ink btn-sm" href="/post">Post a gig</Link></div>}
+          </div>
         </div>
 
-        <aside className="side">
-          <form className="panel" onSubmit={save}>
-            <h2>Your profile</h2>
-            <p className="muted small">Posters see this when you apply.</p>
-            <div className="field"><label htmlFor="h">Handle</label><input id="h" className="input" value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="yourname" /></div>
-            <div className="field"><label htmlFor="x">X account</label><input id="x" className="input" value={xh} onChange={(e) => setXh(e.target.value)} placeholder="@you" /></div>
-            <div className="field"><label htmlFor="s">Skills</label><input id="s" className="input" value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="Logos, Motion, Threads" /><span className="hint">Separate with commas</span></div>
-            <div className="field"><label htmlFor="b">About you</label><textarea id="b" className="textarea" style={{ minHeight: 90 }} maxLength={400} value={bio} onChange={(e) => setBio(e.target.value)} /></div>
+        <aside className="stack sticky">
+          <form className="card tool" onSubmit={save}>
+            <div className="tool-head"><h2 className="tool-title">Your profile</h2></div>
+            <div className="pane">
+              <label className="label" htmlFor="h">Handle</label>
+              <input id="h" className="input" value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="yourname" />
+            </div>
+            <div className="pane">
+              <label className="label" htmlFor="x">X account</label>
+              <input id="x" className="input" value={xh} onChange={(e) => setXh(e.target.value)} placeholder="@you" />
+            </div>
+            <div className="pane">
+              <label className="label" htmlFor="s">Skills</label>
+              <input id="s" className="input" value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="Logos, Motion, Threads" />
+              <span className="hint">Separate with commas</span>
+            </div>
+            <div className="pane">
+              <label className="label" htmlFor="b">About you</label>
+              <textarea id="b" className="textarea" style={{ minHeight: 96 }} maxLength={400} value={bio} onChange={(e) => setBio(e.target.value)} />
+            </div>
             {msg && <p className="ok">{msg}</p>}
             {err && <p className="error">{err}</p>}
-            <div><button className="btn">Save profile</button></div>
+            <button className="btn btn-ink btn-block">Save profile</button>
           </form>
         </aside>
       </div>

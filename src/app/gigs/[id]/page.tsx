@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useSession } from "@/components/Providers";
 import { Stamp, amountParts } from "@/components/Slip";
-import GuardBunny from "@/components/GuardBunny";
 import Bunny from "@/components/Bunny";
 import Avatar from "@/components/Avatar";
 import { UsdHint } from "@/components/usePrices";
@@ -128,107 +127,102 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     }
   }
 
-  if (err) return <div className="page"><div className="wrap"><h1>Gig not found</h1><p className="muted" style={{ marginTop: 12 }}>{err}</p><p style={{ marginTop: 20 }}><Link className="btn" href="/">Back to the board</Link></p></div></div>;
-  if (!d) return <div className="page"><div className="wrap"><p className="muted">Loading…</p></div></div>;
+  if (err) return <div className="page container"><div className="lost"><Bunny size={150} id="gigs-gone" mood="sleep" title="" /><h1 className="page-title">Gig not found</h1><p className="muted">{err}</p><Link className="btn btn-ink" href="/#board">Back to the board</Link></div></div>;
+  if (!d) return <div className="page container"><p className="muted">Loading…</p></div>;
 
   const g = d.gig;
   const amt = `${amountParts(g.amount, g.currency)} ${g.currency}`;
   const payout = d.feeBps > 0 ? fromBase((BigInt(g.amount) * BigInt(10_000 - d.feeBps)) / 10_000n, g.currency) : null;
   const inEscrow = g.status === "funded" || g.status === "submitted";
 
+  const lockTag = g.status === "paid" ? "Paid out" : inEscrow ? "Locked in a vault" : g.status === "refunded" ? "Refunded" : g.status === "cancelled" ? "Closed" : "Locks when someone is hired";
   return (
-    <div className="page">
-      <div className="wrap">
-        <Link href="/#board" className="back">All gigs</Link>
-        <div className="gig-grid">
-          <div style={{ display: "grid", gap: 22 }}>
-            <div className="panel gig-head has-guard">
-              <GuardBunny
-                variant="gig"
-                mood={g.status === "paid" ? "happy" : "idle"}
-                intro={
-                  g.status === "paid" ? "Paid out. Nice work"
-                  : g.status === "submitted" ? "Work's in. Check it, then sign"
-                  : inEscrow ? "Budget's locked. I'm watching it"
-                  : g.status === "open" ? "The money stays with the poster until someone's hired"
-                  : ""
-                }
-              />
-              <div className="head-row">
-                <Stamp status={g.status} disputed={g.disputed} />
-                <span className="tag">{g.category}</span>
-              </div>
-              <h1>{g.title}</h1>
-              <p className="gig-desc">{g.description}</p>
-              <p className="muted small">
-                Posted {ago(g.created_at)} by <Link href={`/u/${d.poster?.handle ?? g.poster}`}>{d.poster?.handle ? `@${d.poster.handle}` : short(g.poster)}</Link>
-                {d.poster?.x_handle && <> (<a href={`https://x.com/${d.poster.x_handle}`} target="_blank" rel="noreferrer">X</a>)</>}
-              </p>
-            </div>
+    <div className="page container">
+      <Link href="/#board" className="back">All gigs</Link>
+      <div className="page-head">
+        <div>
+          <div className="row"><Stamp status={g.status} disputed={g.disputed} /><span className="pill">{g.category}</span></div>
+          <h1 style={{ marginTop: 16 }}>{g.title}</h1>
+          <p className="byline">
+            <span>Posted {ago(g.created_at)} by <Link href={`/u/${d.poster?.handle ?? g.poster}`}>{d.poster?.handle ? `@${d.poster.handle}` : short(g.poster)}</Link>
+              {d.poster?.x_handle && <> on <a href={`https://x.com/${d.poster.x_handle}`} target="_blank" rel="noreferrer">X</a></>}</span>
+            <span>{g.deadline_days} day deadline</span>
+          </p>
+        </div>
+      </div>
 
-            <ActionPanel />
-
-            {d.submissions && d.submissions.length > 0 && (
-              <div className="panel">
-                <h2>Delivered work</h2>
-                {d.submissions.map((s, i) => (
-                  <div key={i} className="app">
-                    <p className="gig-desc">{s.note}</p>
-                    {s.link && <a href={s.link} target="_blank" rel="noreferrer nofollow">{s.link}</a>}
-                    <span className="muted small">{ago(s.created_at)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {d.disputes && d.disputes.length > 0 && (
-              <div className="panel">
-                <h2>Dispute</h2>
-                {d.disputes.map((x, i) => (
-                  <div key={i} className="app">
-                    <span className="muted small">
-                      Opened by {x.opened_by === g.poster ? "the poster" : "the worker"} {ago(x.created_at)}
-                      {x.resolution && `, resolved: ${x.resolution}`}
-                    </span>
-                    <p className="gig-desc">{x.reason}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+      <div className="split">
+        <div className="stack">
+          <div className="panel pad">
+            <h2 className="panel-title">The brief</h2>
+            <p className="prose">{g.description}</p>
           </div>
 
-          <aside className="side">
-            <div className="panel">
-              <div className="budget"><b>{amountParts(g.amount, g.currency)}</b><span>{g.currency}</span><UsdHint amount={g.amount} currency={g.currency} /></div>
-              {payout !== null && <span className="muted small">Worker receives {payout.toLocaleString("en-US", { maximumFractionDigits: 4 })} {g.currency} after the {d.feeBps / 100}% fee</span>}
-              <dl className="facts">
-                <div><dt>Deadline</dt><dd>{g.deadline_days} days after hiring</dd></div>
-                <div><dt>Poster</dt><dd><Link href={`/u/${g.poster}`}>{short(g.poster)}</Link></dd></div>
-                {g.worker && <div><dt>Worker</dt><dd><Link href={`/u/${g.worker}`}>{short(g.worker)}</Link></dd></div>}
-                {g.vault && <div><dt>Vault</dt><dd><a href={explorerAccount(g.vault)} target="_blank" rel="noreferrer">{short(g.vault)}</a></dd></div>}
-                {g.multisig && <div><dt>Vault rules</dt><dd><a href={squadsVaultUrl(g.multisig)} target="_blank" rel="noreferrer">2 of 3 on Squads</a></dd></div>}
-              </dl>
+          <ActionPanel />
+
+          {d.submissions && d.submissions.length > 0 && (
+            <div className="panel pad">
+              <h2 className="panel-title">Delivered work</h2>
+              {d.submissions.map((s, i) => (
+                <div key={i} className="item">
+                  <p className="prose">{s.note}</p>
+                  {s.link && <a className="inline-link" href={s.link} target="_blank" rel="noreferrer nofollow">{s.link}</a>}
+                  <span className="hint">{ago(s.created_at)}</span>
+                </div>
+              ))}
             </div>
-            {g.worker && g.multisig && <Signers />}
-            <ShareBox />
-            <div className="panel">
-              <h2>History</h2>
-              <ol className="timeline">
-                {d.events.map((e, i) => (
-                  <li key={i} className="done">
-                    <span>
-                      {EVENT_TEXT[e.kind] ?? e.kind}
-                      <br />
-                      <span className="when">{ago(e.created_at)}</span>
-                      {e.tx && <>{"  "}<a href={explorerTx(e.tx)} target="_blank" rel="noreferrer">View transaction</a></>}
-                    </span>
-                  </li>
-                ))}
-              </ol>
+          )}
+
+          {d.disputes && d.disputes.length > 0 && (
+            <div className="panel pad">
+              <h2 className="panel-title">Dispute</h2>
+              {d.disputes.map((x, i) => (
+                <div key={i} className="item">
+                  <span className="hint">
+                    Opened by {x.opened_by === g.poster ? "the poster" : "the worker"} {ago(x.created_at)}
+                    {x.resolution && `, resolved: ${x.resolution}`}
+                  </span>
+                  <p className="prose">{x.reason}</p>
+                </div>
+              ))}
             </div>
-            {d.role === "visitor" && wallet && g.status === "open" && <ReportLink />}
-          </aside>
+          )}
         </div>
+
+        <aside className="stack sticky">
+          <div className="card tool">
+            <div className="tool-head">
+              <h2 className="tool-title">Budget</h2>
+              <span className="tag" style={inEscrow || g.status === "paid" ? undefined : { color: "var(--muted)", background: "var(--sunk)" }}>{lockTag}</span>
+            </div>
+            <div className="budget-big">
+              <b>{amountParts(g.amount, g.currency)}<small>{g.currency}</small></b>
+              <UsdHint amount={g.amount} currency={g.currency} />
+            </div>
+            <dl className="rows">
+              {payout !== null && <div><dt>Worker receives</dt><dd>{payout.toLocaleString("en-US", { maximumFractionDigits: 4 })} {g.currency}</dd></div>}
+              <div><dt>Deadline</dt><dd>{g.deadline_days} days after hiring</dd></div>
+              <div><dt>Poster</dt><dd><Link href={`/u/${g.poster}`}>{short(g.poster)}</Link></dd></div>
+              {g.worker && <div><dt>Worker</dt><dd><Link href={`/u/${g.worker}`}>{short(g.worker)}</Link></dd></div>}
+              {g.vault && <div><dt>Vault</dt><dd><a href={explorerAccount(g.vault)} target="_blank" rel="noreferrer">{short(g.vault)}</a></dd></div>}
+              {g.multisig && <div><dt>Vault rules</dt><dd><a href={squadsVaultUrl(g.multisig)} target="_blank" rel="noreferrer">2 of 3 on Squads</a></dd></div>}
+            </dl>
+          </div>
+          {g.worker && g.multisig && <Signers />}
+          <ShareBox />
+          <div className="panel pad">
+            <h2 className="panel-title">History</h2>
+            <ol className="timeline">
+              {d.events.map((e, i) => (
+                <li key={i}>
+                  <span>{EVENT_TEXT[e.kind] ?? e.kind}</span>
+                  <small>{ago(e.created_at)}{e.tx && <>{", "}<a href={explorerTx(e.tx)} target="_blank" rel="noreferrer">view transaction</a></>}</small>
+                </li>
+              ))}
+            </ol>
+          </div>
+          {d.role === "visitor" && wallet && g.status === "open" && <ReportLink />}
+        </aside>
       </div>
     </div>
   );
@@ -245,15 +239,15 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
       { who: "Referee", addr: null as string | null },
     ];
     return (
-      <div className="panel">
-        <h2>Signatures</h2>
+      <div className="panel pad">
+        <h2 className="panel-title">Signatures</h2>
         <ul className="signers">
           {people.map((x) => {
             const on = x.who === "Referee" ? !!active?.p?.approved.some((a) => a !== g.poster && a !== g.worker) : signed(x.addr);
             return (
-              <li key={x.who} className={`signer ${on ? "on" : ""}`}>
-                <span className={`sig ${on ? "on" : ""}`} />
-                <span className="who">{x.who}</span>
+              <li key={x.who} className={on ? "on" : ""}>
+                <span className="sig" />
+                <b style={{ fontWeight: 500 }}>{x.who}</b>
                 <span className="what">{on ? `Signed ${active!.label}` : x.addr ? short(x.addr) : "Votes in disputes"}</span>
               </li>
             );
@@ -283,20 +277,20 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
 
     if (g.status === "paid")
       return (
-        <div className="panel">
-          <div className="notice good"><Bunny size={84} id="gigs-paid" mood="happy" title="GIGS celebrating" />Paid. The vault sent {amt} to the worker.</div>
+        <div className="panel pad">
+          <div className="notice good notice-bunny"><Bunny size={84} id="gigs-paid" mood="happy" title="GIGS celebrating" />Paid. The vault sent {amt} to the worker.</div>
           {(role === "poster" || role === "worker") && <ReviewBox />}
         </div>
       );
     if (g.status === "refunded")
-      return <div className="panel"><div className="notice">Refunded. The budget went back to the poster.</div></div>;
+      return <div className="panel pad"><div className="notice">Refunded. The budget went back to the poster.</div></div>;
     if (g.status === "cancelled")
-      return <div className="panel"><div className="notice">The poster closed this gig. Nobody was hired.</div></div>;
+      return <div className="panel pad"><div className="notice">The poster closed this gig. Nobody was hired.</div></div>;
 
     // ---------- open ----------
     if (g.status === "open" || g.status === "hiring") {
       if (role === "poster") return <PosterHiring />;
-      if (role === "referee") return <div className="panel"><p className="muted">You&apos;re the referee, so you can&apos;t apply to gigs.</p></div>;
+      if (role === "referee") return <div className="panel pad"><p className="muted">You&apos;re the referee, so you can&apos;t apply to gigs.</p></div>;
       return <ApplyBox />;
     }
 
@@ -304,11 +298,11 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     if (!inEscrow) return null;
 
     if (role === "visitor")
-      return <div className="panel"><p className="muted">Someone was hired and {amt} is locked in the vault.</p></div>;
+      return <div className="panel pad"><p className="muted">Someone was hired and {amt} is locked in the vault.</p></div>;
 
     const blocks: React.ReactNode[] = [];
     const executeBtn = (kind: "pay" | "refund") => (
-      <button className="btn primary" disabled={!!busy} onClick={() => run(`execute_${kind}`, { done: kind === "pay" ? "Paid out." : "Refunded." })}>
+      <button className="btn btn-ink" disabled={!!busy} onClick={() => run(`execute_${kind}`, { done: kind === "pay" ? "Paid out." : "Refunded." })}>
         {busy === `execute_${kind}` ? "Sending…" : kind === "pay" ? "Send the payout" : "Send the refund"}
       </button>
     );
@@ -326,7 +320,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
           <div key="refreq" className="notice warn">
             The poster asked for a refund. If you agree, approve it and the budget goes back to them. If you don&apos;t, open a dispute.
             <div className="row" style={{ marginTop: 10 }}>
-              <button className="btn line" disabled={!!busy} onClick={() => run("approve_refund", { done: "Refunded." })}>
+              <button className="btn btn-soft" disabled={!!busy} onClick={() => run("approve_refund", { done: "Refunded." })}>
                 {busy === "approve_refund" ? "Check your wallet…" : "Agree and refund"}
               </button>
             </div>
@@ -340,7 +334,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
           <div key="approve" className="notice good">
             The worker delivered and requested {amt}. Check the work below, then approve to pay them.
             <div className="row" style={{ marginTop: 10 }}>
-              <button className="btn primary" disabled={!!busy} onClick={() => run("approve_pay", { done: "Paid. Thanks for using escrow." })}>
+              <button className="btn btn-ink" disabled={!!busy} onClick={() => run("approve_pay", { done: "Paid. Thanks for using escrow." })}>
                 {busy === "approve_pay" ? "Check your wallet…" : `Approve and pay ${amt}`}
               </button>
             </div>
@@ -364,15 +358,15 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     if (g.disputed && role !== "referee")
       blocks.push(<div key="d" className="notice warn">A dispute is open. The referee will review the gig, the delivered work and both sides, then vote.</div>);
 
-    return <div className="panel">{blocks}<Feedback /></div>;
+    return <div className="panel pad">{blocks}<Feedback /></div>;
   }
 
   function PosterHiring() {
     const apps = d!.applications ?? [];
     const profs = Object.fromEntries(d!.applicantProfiles.map((p) => [p.wallet, p]));
     return (
-      <div className="panel">
-        <h2>Applicants ({apps.length})</h2>
+      <div className="panel pad">
+        <h2 className="panel-title">Applicants ({apps.length})</h2>
         {g.hiring && (
           <div className="notice">
             You started hiring {short(g.hiring)}. If you signed, it confirms in a few seconds.{" "}
@@ -380,25 +374,25 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
           </div>
         )}
         {apps.length === 0 && <p className="muted">No applicants yet. Share the link on X to get some eyes on it.</p>}
-        <div className="apps">
+        <div>
           {apps.map((a) => {
             const p = profs[a.applicant];
             return (
-              <div className="app" key={a.applicant}>
-                <div className="app-top">
-                  <strong className="who-line">
+              <div className="item" key={a.applicant}>
+                <div className="item-top">
+                  <strong className="who">
                     <Avatar wallet={a.applicant} size={28} />
                     <Link href={`/u/${a.applicant}`}>{p?.handle ? `@${p.handle}` : short(a.applicant)}</Link>
                     {p?.x_handle && <>{" "}<a href={`https://x.com/${p.x_handle}`} target="_blank" rel="noreferrer">X</a></>}
                   </strong>
-                  <button className="btn primary" disabled={!!busy}
+                  <button className="btn btn-ink" disabled={!!busy}
                     onClick={() => run("hire", { path: `/api/gigs/${id}/hire`, body: { applicant: a.applicant }, done: `Hired. ${amt} is locked in the vault.` })}>
                     {busy === "hire" ? "Check your wallet…" : `Hire and lock ${amt}`}
                   </button>
                 </div>
-                <p className="gig-desc">{a.pitch}</p>
+                <p className="prose">{a.pitch}</p>
                 {a.portfolio && <a href={a.portfolio} target="_blank" rel="noreferrer nofollow" className="small">{a.portfolio}</a>}
-                {p?.skills?.length ? <div className="row" style={{ gap: 6 }}>{p.skills.map((s) => <span key={s} className="tag" style={{ flex: "0 0 auto" }}>{s}</span>)}</div> : null}
+                {p?.skills?.length ? <div className="chipline">{p.skills.map((s) => <span key={s} className="pill">{s}</span>)}</div> : null}
               </div>
             );
           })}
@@ -420,10 +414,10 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
   function ApplyBox() {
     const [pitch, setPitch] = useDraft("pitch");
     const [portfolio, setPortfolio] = useDraft("portfolio");
-    if (d!.applied) return <div className="panel"><div className="notice">You applied. If the poster hires you, the budget gets locked and this page shows your next step.</div></div>;
+    if (d!.applied) return <div className="panel pad"><div className="notice">You applied. If the poster hires you, the budget gets locked and this page shows your next step.</div></div>;
     return (
-      <div className="panel">
-        <h2>Apply for this gig</h2>
+      <div className="panel pad">
+        <h2 className="panel-title">Apply for this gig</h2>
         <div className="field">
           <label htmlFor="pitch">Why you?</label>
           <textarea id="pitch" className="textarea" style={{ minHeight: 110 }} value={pitch} onChange={(e) => setPitch(e.target.value)}
@@ -434,7 +428,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
           <input id="pf" className="input" value={portfolio} onChange={(e) => setPortfolio(e.target.value)} placeholder="https://x.com/you/status/…" />
         </div>
         <div>
-          <button className="btn primary" disabled={!!busy}
+          <button className="btn btn-ink" disabled={!!busy}
             onClick={() => post(`/api/gigs/${id}/apply`, { pitch, portfolio }, "Applied.")}>
             {wallet ? (busy ? "Sending…" : "Apply") : "Sign in to apply"}
           </button>
@@ -449,7 +443,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     const [link, setLink] = useDraft("link");
     return (
       <div style={{ display: "grid", gap: 12 }}>
-        <h2>Deliver the work</h2>
+        <h2 className="panel-title">Deliver the work</h2>
         <p className="muted small">{amt} is locked for you. Once you deliver, you approve the payout to yourself and the poster signs the second approval.</p>
         <div className="field">
           <label htmlFor="note">What you delivered</label>
@@ -460,7 +454,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
           <input id="link" className="input" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Google Drive, Dropbox, GitHub…" />
         </div>
         <div>
-          <button className="btn primary" disabled={!!busy || note.trim().length < 3}
+          <button className="btn btn-ink" disabled={!!busy || note.trim().length < 3}
             onClick={() => run("request_pay", { confirm: { note, link }, done: "Delivered. Waiting for the poster to approve." })}>
             {busy === "request_pay" ? "Check your wallet…" : "Deliver and request payment"}
           </button>
@@ -478,7 +472,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
         <label htmlFor="reason">What went wrong?</label>
         <textarea id="reason" className="textarea" style={{ minHeight: 90 }} value={reason} onChange={(e) => setReason(e.target.value)} />
         <span className="hint">The referee reads this, the gig description and the delivered work, then votes to pay the worker or refund the poster.</span>
-        <div><button className="btn line" disabled={!!busy} onClick={() => post(`/api/gigs/${id}/dispute`, { reason }, "Dispute opened.")}>Open dispute</button></div>
+        <div><button className="btn btn-soft" disabled={!!busy} onClick={() => post(`/api/gigs/${id}/dispute`, { reason }, "Dispute opened.")}>Open dispute</button></div>
       </div>
     );
   }
@@ -488,13 +482,13 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     if (!g.disputed) return <p className="muted">You&apos;re the referee on this vault. You can only vote once someone opens a dispute.</p>;
     return (
       <div style={{ display: "grid", gap: 10 }}>
-        <h2>Referee decision</h2>
+        <h2 className="panel-title">Referee decision</h2>
         <p className="muted small">Your vote is the 2nd signature on whichever side you pick. Then the winning party sends the funds.</p>
         <div className="row">
-          <button className="btn primary" disabled={!!busy || rel?.state !== "active"} onClick={() => run("referee_pay", { done: "Voted to pay the worker." })}>
+          <button className="btn btn-ink" disabled={!!busy || rel?.state !== "active"} onClick={() => run("referee_pay", { done: "Voted to pay the worker." })}>
             Pay the worker
           </button>
-          <button className="btn line" disabled={!!busy || ref?.state !== "active"} onClick={() => run("referee_refund", { done: "Voted to refund the poster." })}>
+          <button className="btn btn-soft" disabled={!!busy || ref?.state !== "active"} onClick={() => run("referee_refund", { done: "Voted to refund the poster." })}>
             Refund the poster
           </button>
         </div>
@@ -513,8 +507,8 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
       : `Hiring: ${g.title}. ${amt}, paid from escrow`;
     const [copied, setCopied] = useState(false);
     return (
-      <div className="share">
-        <a className="btn line sm" target="_blank" rel="noreferrer"
+      <div className="row" style={{ padding: "0 4px" }}>
+        <a className="btn btn-soft btn-sm" target="_blank" rel="noreferrer"
           href={`https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`}>
           Share on X
         </a>
@@ -534,7 +528,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     if (mine) return <p className="muted small">You gave {other} {mine.rating} out of 5. Thanks for the review.</p>;
     return (
       <div style={{ display: "grid", gap: 12 }}>
-        <h2>Review {other}</h2>
+        <h2 className="panel-title">Review {other}</h2>
         <div className="rate-pick" role="radiogroup" aria-label="Rating">
           {[1, 2, 3, 4, 5].map((n) => (
             <button key={n} type="button" role="radio" aria-checked={rating === n} aria-label={`${n} out of 5`}
@@ -545,7 +539,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
         <textarea className="textarea" style={{ minHeight: 80 }} maxLength={500} value={body} onChange={(e) => setBody(e.target.value)}
           placeholder="What was it like to work with them? (optional)" />
         <div>
-          <button className="btn" disabled={!rating || !!busy} onClick={() => post(`/api/gigs/${id}/review`, { rating, body }, "Review posted.")}>
+          <button className="btn btn-ink" disabled={!rating || !!busy} onClick={() => post(`/api/gigs/${id}/review`, { rating, body }, "Review posted.")}>
             Post review
           </button>
         </div>
@@ -558,7 +552,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
     const [sent, setSent] = useState(false);
     if (sent) return <p className="muted small">Reported. Thanks.</p>;
     return (
-      <button className="text-btn small" onClick={async () => {
+      <button className="text-btn" onClick={async () => {
         const reason = prompt("What's wrong with this listing?");
         if (!reason) return;
         await api(`/api/gigs/${id}/report`, { reason }).catch(() => {});

@@ -25,19 +25,19 @@ export default function QuickPost() {
   }
 
   return (
-    <form className="card tool" onSubmit={go}>
+    <form className="card tool" id="post" onSubmit={go}>
       <div className="tool-head">
         <h2 className="tool-title">Post a gig</h2>
-        <span className="pill-ok">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-          Budget held in escrow
+        <span className="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+          Paid from a vault
         </span>
       </div>
 
       <div className="pane">
         <div className="pane-top">
           <label className="label" htmlFor="qp-title">What do you need done?</label>
-          <select className="select qp-cat" aria-label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select className="select select-sm" aria-label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
           </select>
         </div>
@@ -48,12 +48,12 @@ export default function QuickPost() {
       <div className="pane">
         <div className="pane-top">
           <label className="label" htmlFor="qp-amt">Budget</label>
-          <span className="note">{usd !== null ? `≈ ${formatUsd(usd)}` : `Min ${MIN_AMOUNT[currency]} ${currency}`}</span>
+          <span className="note">{usd !== null ? `About ${formatUsd(usd)}` : `Minimum ${MIN_AMOUNT[currency]} ${currency}`}</span>
         </div>
         <div className="pane-row">
           <input id="qp-amt" className="big-input" inputMode="decimal" placeholder="0.00" value={amount}
             onChange={(e) => setAmount(e.target.value.replace(",", ".").replace(/[^\d.]/g, ""))} />
-          <div className="cur-toggle" role="group" aria-label="Currency">
+          <div className="toggle" role="group" aria-label="Currency">
             {(["SOL", "USDC"] as const).map((c) => (
               <button type="button" key={c} aria-pressed={currency === c} onClick={() => setCurrency(c)}>{c}</button>
             ))}
@@ -62,11 +62,11 @@ export default function QuickPost() {
       </div>
 
       <dl className="rows">
-        <div><dt>Held in</dt><dd>A 2-of-3 Squads vault</dd></div>
+        <div><dt>Held in</dt><dd>A 2 of 3 Squads vault</dd></div>
         <div><dt>Leaves your wallet</dt><dd>Only when you hire</dd></div>
         <div><dt>Fee</dt><dd>{FEE_BPS > 0 ? `${FEE_BPS / 100}% of the payout` : "None"}</dd></div>
       </dl>
-      <button className="btn primary block" disabled={!ready}>{ready ? "Continue" : "Add a title and budget"}</button>
+      <button className="btn btn-ink btn-block" disabled={!ready}>{ready ? "Continue" : "Add a title and budget"}</button>
     </form>
   );
 }

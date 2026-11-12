@@ -2,37 +2,42 @@ import Link from "next/link";
 import WalletButton from "./WalletButton";
 import CopyCA from "./CopyCA";
 import Logo from "./Logo";
-import HeaderShell from "./HeaderShell";
+import HeaderFade from "./HeaderFade";
 import { SITE_NAME, X_URL } from "@/lib/config";
 
-export function Mark() {
-  return <Logo size={24} />;
+export function XIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
 }
 
 export default function Header() {
   return (
-    <HeaderShell>
-      <div className="wrap header-row">
+    <header className="site-header">
+      <HeaderFade />
+      <div className="container header-row">
         <Link href="/" className="brand" aria-label={`${SITE_NAME} home`}>
-          <Mark />
-          {SITE_NAME}
+          <Logo size={26} />
+          <span>{SITE_NAME}</span>
         </Link>
-        <nav className="navpill" aria-label="Main">
+        <nav className="seg" aria-label="Main">
           <Link href="/#board">Gigs</Link>
-          <Link href="/#live">Live</Link>
+          <Link href="/#how">How it works</Link>
           <Link href="/leaderboard">Leaderboard</Link>
-          <Link href="/how-it-works">Docs</Link>
+          <Link href="/docs">Docs</Link>
         </nav>
         <div className="header-end">
           {X_URL && (
-            <a href={X_URL} className="icon-btn" target="_blank" rel="noreferrer" aria-label={`${SITE_NAME} on X`}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.1-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20Z" /></svg>
+            <a href={X_URL} className="icon-btn" target="_blank" rel="noopener noreferrer" aria-label={`${SITE_NAME} on X`}>
+              <XIcon />
             </a>
           )}
           <CopyCA />
           <WalletButton />
         </div>
       </div>
-    </HeaderShell>
+    </header>
   );
 }

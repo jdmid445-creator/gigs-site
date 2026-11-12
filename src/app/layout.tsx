@@ -1,11 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import "@fontsource-variable/geist";
 import "./globals.css";
 import Providers from "@/components/Providers";
-import Header, { Mark } from "@/components/Header";
-import CopyCA from "@/components/CopyCA";
-import { SITE_NAME, CLUSTER } from "@/lib/config";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { SITE_NAME } from "@/lib/config";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
@@ -30,23 +29,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
+          <a href="#main" className="sr-only">Skip to content</a>
           <Header />
-          <main>{children}</main>
-          <footer className="site-footer">
-            <div className="wrap footer-row">
-              <Link href="/" className="brand"><Mark />{SITE_NAME}</Link>
-              <nav className="footer-links" aria-label="Footer">
-                <Link href="/#board">Gigs</Link>
-                <Link href="/leaderboard">Leaderboard</Link>
-                <Link href="/how-it-works">Docs</Link>
-                <a href="https://squads.so" target="_blank" rel="noreferrer">Squads</a>
-              </nav>
-              <CopyCA />
-            </div>
-            <p className="wrap fine-print">
-              Escrow runs on Squads vaults on Solana.{CLUSTER === "devnet" ? " This is the test network: no real money moves." : ""} Not financial advice.
-            </p>
-          </footer>
+          <main id="main">{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>

@@ -50,13 +50,17 @@ export default function LiveFeed({ limit = 12, compact = false }: { limit?: numb
   const rows = items?.slice(0, limit) ?? [];
   if (compact) {
     return (
-      <ul className="now">
-        {items === null && <li><span>Loading…</span></li>}
-        {items?.length === 0 && <li><span>Nothing yet. The first gig shows up here.</span></li>}
+      <ul className="quick">
+        {items === null && <li className="quick-empty">Loading…</li>}
+        {items?.length === 0 && <li className="quick-empty">Nothing yet. New gigs, locked budgets and payouts show up here as they happen.</li>}
         {rows.map((i) => (
           <li key={i.id}>
-            <span>{i.handle ? `@${i.handle}` : short(i.who)} {VERB[i.kind]}</span>
-            <b>{amountShort(i.gig.amount, i.gig.currency)} {i.gig.currency}</b>
+            <Avatar wallet={i.who} size={26} />
+            <span className="quick-name">
+              <strong>{i.gig.title}</strong>
+              <span>{i.handle ? `@${i.handle}` : short(i.who)} {VERB[i.kind]}</span>
+            </span>
+            <span className="quick-val">{amountShort(i.gig.amount, i.gig.currency)} {i.gig.currency}</span>
           </li>
         ))}
       </ul>
@@ -67,7 +71,7 @@ export default function LiveFeed({ limit = 12, compact = false }: { limit?: numb
   return (
     <div className="card feed">
       <div className="feed-head">
-        <span className="feed-title"><span className="live-dot" aria-hidden /> Live</span>
+        <span className="feed-title"><span className="live-dot" aria-hidden /> Live from the board</span>
         {items && items.length > 0 && <span className="feed-totals">{items.length} recent events, {paid} payout{paid === 1 ? "" : "s"}</span>}
       </div>
       {items === null && <div className="feed-empty">Loading…</div>}

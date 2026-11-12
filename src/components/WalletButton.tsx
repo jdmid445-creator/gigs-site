@@ -47,13 +47,13 @@ export default function WalletButton() {
     setPickerOpen(true);
   }
 
-  if (loading) return <span className="wallet-btn ghost" aria-hidden />;
+  if (loading) return <span className="wallet-ghost" aria-hidden />;
 
   if (wallet)
     return (
       <div className="wallet-menu">
-        <button className="wallet-btn signed" onClick={() => setMenu((m) => !m)} aria-expanded={menu}>
-          <span className="dot" aria-hidden />
+        <button className="btn btn-soft btn-sm" onClick={() => setMenu((m) => !m)} aria-expanded={menu}>
+          <span className="wallet-dot" aria-hidden />
           {short(wallet)}
         </button>
         {menu && (
@@ -68,7 +68,7 @@ export default function WalletButton() {
 
   return (
     <>
-      <button className="wallet-btn" onClick={start} disabled={busy || connecting}>
+      <button className="btn btn-ink btn-sm" onClick={start} disabled={busy || connecting}>
         {busy || connecting ? "Check your wallet…" : "Sign in"}
       </button>
       {pickerOpen && (
@@ -79,7 +79,7 @@ export default function WalletButton() {
               You&apos;ll sign a message to prove the wallet is yours. It&apos;s free and doesn&apos;t send anything.
             </p>
             {CLUSTER === "devnet" && (
-              <p className="hint">
+              <p className="notice note-box">
                 The site is in test mode on Solana devnet. Switch Phantom to devnet in Settings, Developer settings, Testnet mode.
               </p>
             )}

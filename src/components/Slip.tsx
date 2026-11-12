@@ -45,8 +45,7 @@ export default function GigRow({ gig, meta, href = true }: { gig: SlipGig; meta?
         </div>
       </div>
       <div className="gig-amt">
-        {amountParts(gig.amount, gig.currency)}
-        <small>{gig.currency}</small>
+        {amountParts(gig.amount, gig.currency)}<small>{gig.currency}</small>
         <UsdHint amount={gig.amount} currency={gig.currency} />
       </div>
       <Stamp status={gig.status} disputed={gig.disputed} />

@@ -52,90 +52,90 @@ export default async function UserPage({ params }: Props) {
   const nothing = !profile && !worked.length && !posted.length;
 
   return (
-    <div className="page">
-      <div className="wrap">
-        <div className="gig-grid">
-          <div style={{ display: "grid", gap: 24 }}>
-            <div className="panel profile-head">
-              <div className="profile-id">
-                <Avatar wallet={wallet} size={56} />
-                <div>
-                  <h1>{name}</h1>
-                  <p className="muted small">
-                    <a href={explorerAccount(wallet)} target="_blank" rel="noreferrer">{profile?.handle ? short(wallet) : "View on Solscan"}</a>
-                    {profile?.x_handle && <>{"  "}<a href={`https://x.com/${profile.x_handle}`} target="_blank" rel="noreferrer">X @{profile.x_handle}</a></>}
-                    {profile && <>{"  "}Joined {new Date(profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</>}
-                  </p>
-                </div>
-              </div>
-              {profile?.bio && <p className="gig-desc">{profile.bio}</p>}
-              {profile?.skills?.length ? (
-                <div className="head-row">{profile.skills.map((s) => <span key={s} className="tag">{s}</span>)}</div>
-              ) : null}
+    <div className="page container">
+      <div className="page-head">
+        <div>
+          <div className="profile-id">
+            <Avatar wallet={wallet} size={64} />
+            <div>
+              <h1>{name}</h1>
+              <p className="byline" style={{ marginTop: 8 }}>
+                <a href={explorerAccount(wallet)} target="_blank" rel="noreferrer">{profile?.handle ? short(wallet) : "View on Solscan"}</a>
+                {profile?.x_handle && <a href={`https://x.com/${profile.x_handle}`} target="_blank" rel="noreferrer">@{profile.x_handle} on X</a>}
+                {profile && <span>Joined {new Date(profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>}
+              </p>
             </div>
+          </div>
+          {profile?.bio && <p className="lede" style={{ marginTop: 18 }}>{profile.bio}</p>}
+          {profile?.skills?.length ? <div className="chipline" style={{ marginTop: 14 }}>{profile.skills.map((s) => <span key={s} className="pill">{s}</span>)}</div> : null}
+        </div>
+      </div>
 
-            <dl className="stat-row">
-              <div><dt>Gigs done</dt><dd>{stats.done}</dd></div>
-              <div><dt>Earned</dt><dd>{money(stats.earnedUsd)}</dd>
-                <span className="hint">{[stats.earnedSol && `${num(stats.earnedSol)} SOL`, stats.earnedUsdc && `${num(stats.earnedUsdc, 0)} USDC`].filter(Boolean).join(" and ") || "Nothing yet"}</span></div>
-              <div><dt>Rating</dt><dd>{stats.rating ? stats.rating.toFixed(1) : "–"}</dd>
-                <span className="hint">{stats.reviews ? `${stats.reviews} review${stats.reviews > 1 ? "s" : ""}` : "No reviews yet"}</span></div>
-              <div><dt>Paid out as poster</dt><dd>{money(stats.paidOutUsd)}</dd>
-                <span className="hint">{stats.posted} gig{stats.posted === 1 ? "" : "s"} posted</span></div>
-            </dl>
+      <div className="split">
+        <div className="stack">
+          <dl className="panel stats">
+            <div><dt>Gigs done</dt><dd>{stats.done}</dd></div>
+            <div><dt>Earned</dt><dd>{money(stats.earnedUsd)}</dd>
+              <span className="hint">{[stats.earnedSol && `${num(stats.earnedSol)} SOL`, stats.earnedUsdc && `${num(stats.earnedUsdc, 0)} USDC`].filter(Boolean).join(" and ") || "Nothing yet"}</span></div>
+            <div><dt>Rating</dt><dd>{stats.rating ? stats.rating.toFixed(1) : "None yet"}</dd>
+              <span className="hint">{stats.reviews ? `${stats.reviews} review${stats.reviews > 1 ? "s" : ""}` : "No reviews yet"}</span></div>
+            <div><dt>Paid out as poster</dt><dd>{money(stats.paidOutUsd)}</dd>
+              <span className="hint">{stats.posted} gig{stats.posted === 1 ? "" : "s"} posted</span></div>
+          </dl>
 
-            {nothing && (
-              <div className="empty empty-bunny">
-                <Bunny size={120} id="gigs-user-empty" mood="sleep" title="" />
+          {nothing && (
+            <div className="panel">
+              <div className="empty" style={{ margin: 6 }}>
+                <Bunny size={110} id="gigs-user-empty" mood="sleep" title="" />
                 <h3>Nothing here yet</h3>
                 <p className="muted">This wallet hasn&apos;t posted or finished a gig.</p>
               </div>
-            )}
-
-            {worked.length > 0 && (
-              <section className="stack">
-                <h2 className="section-title">Work</h2>
-                <div className="list">{worked.slice(0, 10).map((g) => <GigRow key={g.id} gig={row(g)} meta={<span>{ago(g.updated_at)}</span>} />)}</div>
-              </section>
-            )}
-            {posted.length > 0 && (
-              <section className="stack">
-                <h2 className="section-title">Posted</h2>
-                <div className="list">{posted.slice(0, 10).map((g) => <GigRow key={g.id} gig={row(g)} meta={<span>{ago(g.created_at)}</span>} />)}</div>
-              </section>
-            )}
-          </div>
-
-          <aside className="side">
-            <div className="panel">
-              <h2>Reviews</h2>
-              {stats.rating !== null && (
-                <div className="rating-big"><b>{stats.rating.toFixed(1)}</b><Rating value={stats.rating} /></div>
-              )}
-              {reviews.length === 0 && <p className="hint">Reviews show up here after a gig is paid out.</p>}
-              <ul className="reviews">
-                {reviews.map((r) => (
-                  <li key={r.gig_id + r.author}>
-                    <div className="review-top">
-                      <Rating value={r.rating} />
-                      <span className="hint">{ago(r.created_at)}</span>
-                    </div>
-                    {r.body && <p>{r.body}</p>}
-                    <span className="hint">
-                      <Link href={`/u/${r.author}`}>{r.authorHandle ? `@${r.authorHandle}` : short(r.author)}</Link>
-                      {r.gigTitle && <>{" on "}<Link href={`/gigs/${r.gig_id}`}>{r.gigTitle}</Link></>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
             </div>
-            {stats.completion !== null && (
-              <p className="hint" style={{ padding: "0 8px" }}>
-                {Math.round(stats.completion * 100)}% of escrowed gigs paid out, the rest refunded
-              </p>
-            )}
-          </aside>
+          )}
+
+          {worked.length > 0 && (
+            <div className="board">
+              <div className="board-head"><h2 className="panel-title">Work</h2></div>
+              <div className="gig-list">{worked.slice(0, 10).map((g) => <GigRow key={g.id} gig={row(g)} meta={<span>{ago(g.updated_at)}</span>} />)}</div>
+            </div>
+          )}
+          {posted.length > 0 && (
+            <div className="board">
+              <div className="board-head"><h2 className="panel-title">Posted</h2></div>
+              <div className="gig-list">{posted.slice(0, 10).map((g) => <GigRow key={g.id} gig={row(g)} meta={<span>{ago(g.created_at)}</span>} />)}</div>
+            </div>
+          )}
         </div>
+
+        <aside className="stack sticky">
+          <div className="panel pad">
+            <h2 className="panel-title">Reviews</h2>
+            {stats.rating !== null && (
+              <div className="rating-big"><b>{stats.rating.toFixed(1)}</b><Rating value={stats.rating} /></div>
+            )}
+            {reviews.length === 0 && <p className="hint">Reviews show up here after a gig is paid out.</p>}
+            <ul className="reviews">
+              {reviews.map((r) => (
+                <li key={r.gig_id + r.author}>
+                  <div className="item-top">
+                    <Rating value={r.rating} />
+                    <span className="hint">{ago(r.created_at)}</span>
+                  </div>
+                  {r.body && <p>{r.body}</p>}
+                  <span className="hint">
+                    <Link className="inline-link" href={`/u/${r.author}`}>{r.authorHandle ? `@${r.authorHandle}` : short(r.author)}</Link>
+                    {r.gigTitle && <>{" on "}<Link className="inline-link" href={`/gigs/${r.gig_id}`}>{r.gigTitle}</Link></>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {stats.completion !== null && (
+            <p className="hint preview-note">
+              {Math.round(stats.completion * 100)}% of escrowed gigs paid out, the rest refunded
+            </p>
+          )}
+        </aside>
       </div>
     </div>
   );
