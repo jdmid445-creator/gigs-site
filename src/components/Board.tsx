@@ -22,6 +22,18 @@ export default function Board() {
   const [data, setData] = useState<Res | null>(null);
   const [err, setErr] = useState("");
 
+  // the finder in the how-it-works mosaic hands its search to the board
+  useEffect(() => {
+    const on = (e: Event) => {
+      const v = String((e as CustomEvent).detail ?? "");
+      const c = CATEGORIES.find((x) => x.toLowerCase() === v.toLowerCase());
+      setStatus("open");
+      if (c) { setCat(c); setQ(""); } else { setCat(null); setQ(v); }
+    };
+    window.addEventListener("gigs:search", on);
+    return () => window.removeEventListener("gigs:search", on);
+  }, []);
+
   useEffect(() => {
     let live = true;
     setErr("");

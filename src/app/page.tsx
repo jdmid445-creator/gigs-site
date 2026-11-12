@@ -5,6 +5,7 @@ import QuickPost from "@/components/QuickPost";
 import LiveFeed from "@/components/LiveFeed";
 import Reveal from "@/components/Reveal";
 import Bunny from "@/components/Bunny";
+import Finder from "@/components/Finder";
 import { CATEGORIES } from "@/lib/config";
 
 const HOPS = [
@@ -144,10 +145,7 @@ export default function Home() {
 
           <div className="tile t-search">
             <h3>Find work<br />that&apos;s paid for</h3>
-            <a href="#board" className="search-bar">
-              <span className="mag"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden><circle cx="7" cy="7" r="5.2" fill="none" stroke="currentColor" strokeWidth="1.7" /><path d="M11 11l3.5 3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg></span>
-              Search design, video, threads, code…
-            </a>
+            <Finder />
           </div>
         </div>
       </section>
