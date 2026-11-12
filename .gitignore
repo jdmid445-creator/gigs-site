@@ -48,3 +48,6 @@ next-env.d.ts
 .tickets-crop.png
 .sec.cjs
 .ext.cjs
+
+# local video/screenshot helper scripts
+/.*.cjs
