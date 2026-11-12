@@ -1,12 +1,13 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ago, short } from "@/lib/client";
+import { markRead } from "@/lib/inbox";
 
 type Msg = { id: string; sender: string; body: string; created_at: string };
 
 /** Private thread between the poster and the hired worker (the referee joins in a dispute). */
-export default function Messages({ gigId, me, poster, worker, names }: {
-  gigId: string; me: string; poster: string; worker: string; names: Record<string, string | undefined>;
+export default function Messages({ gigId, me, poster, worker, names, title = "Messages", tall = false }: {
+  gigId: string; me: string; poster: string; worker: string; names: Record<string, string | undefined>; title?: string; tall?: boolean;
 }) {
   const [msgs, setMsgs] = useState<Msg[] | null>(null);
   const [text, setText] = useState("");
@@ -31,6 +32,8 @@ export default function Messages({ gigId, me, poster, worker, names }: {
   }, [load]);
 
   useEffect(() => {
+    const lastAt = msgs?.[msgs.length - 1]?.created_at;
+    if (lastAt) markRead(gigId, lastAt);
     if (msgs && msgs.length !== count.current && list.current) {
       list.current.scrollTop = list.current.scrollHeight;
       count.current = msgs.length;
@@ -61,9 +64,9 @@ export default function Messages({ gigId, me, poster, worker, names }: {
 
   return (
     <div className="panel pad">
-      <h2 className="panel-title">Messages</h2>
+      <h2 className="panel-title">{title}</h2>
       <p className="hint">Only you and {other} can see this. The referee can read it if a dispute is opened. Nobody here will ever ask for your seed phrase.</p>
-      <div className="chat-list" ref={list} aria-live="polite">
+      <div className={`chat-list${tall ? " tall" : ""}`} ref={list} aria-live="polite">
         {msgs === null && <p className="hint">Loading…</p>}
         {msgs && msgs.length === 0 && <p className="hint chat-empty">No messages yet. Say hi, share files or ask a question about the brief.</p>}
         {msgs?.map((m) => (

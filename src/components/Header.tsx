@@ -3,6 +3,7 @@ import WalletButton from "./WalletButton";
 import CopyCA from "./CopyCA";
 import Logo from "./Logo";
 import HeaderFade from "./HeaderFade";
+import InboxButton from "./InboxButton";
 import { SITE_NAME, X_URL } from "@/lib/config";
 
 export function XIcon() {
@@ -35,6 +36,7 @@ export default function Header() {
             </a>
           )}
           <CopyCA />
+          <InboxButton />
           <WalletButton />
         </div>
       </div>
