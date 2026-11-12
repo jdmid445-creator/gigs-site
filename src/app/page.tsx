@@ -6,12 +6,12 @@ import LiveFeed from "@/components/LiveFeed";
 import Reveal from "@/components/Reveal";
 import Bunny from "@/components/Bunny";
 import Finder from "@/components/Finder";
-import { CATEGORIES } from "@/lib/config";
+import VaultCard from "@/components/VaultCard";
 
 const HOPS = [
-  { t: "Post", where: "free", d: "Say what you need, the deadline and the budget. Nothing leaves your wallet yet." },
-  { t: "Hire", where: "one signature", d: "Pick someone. Their budget moves into a vault shared by you, them and a referee." },
-  { t: "Pay", where: "two of three", d: "They deliver and sign, you sign, and the vault pays them. A referee breaks ties." },
+  { t: "Post", d: "Say what you need, the deadline and the budget. Nothing leaves your wallet yet." },
+  { t: "Hire", d: "Pick someone. One signature moves the budget into a vault for you, them and a referee." },
+  { t: "Pay", d: "They deliver and sign, you sign, and the vault pays them. A referee breaks ties." },
 ];
 
 const COMPARE = [
@@ -30,145 +30,131 @@ const FAQ = [
   ["What can I get paid in?", "SOL or USDC. The poster picks when they post, and the amount locked is the amount paid out, minus any platform fee shown up front."],
 ];
 
-const Tick = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#161616" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+const Arrow = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M7 17L17 7M9 7h8v8" /></svg>
 );
+
+/** A thin ring that fades from nothing at the top to a hairline at the bottom. */
+function Ring({ size, className, up = false }: { size: number; className: string; up?: boolean }) {
+  return (
+    <svg className={`ring ${className}`} width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
+      <circle cx={size / 2} cy={size / 2} r={size / 2 - 0.5} fill="none" stroke={`url(#${up ? "ringUp" : "ringDown"})`} strokeWidth="1" />
+    </svg>
+  );
+}
 
 export default function Home() {
   return (
-    <>
+    <div className="home">
       <Reveal />
-      <section className="hero">
-        <Tickets />
-        <div className="container hero-inner">
-          <h1 className="hero-title">
-            <span className="rise" style={{ "--d": "80ms" } as React.CSSProperties}>Crypto work,</span>
-            <span className="rise" style={{ "--d": "180ms" } as React.CSSProperties}>paid from a locked vault.</span>
+      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
+        <defs>
+          <linearGradient id="ringDown" x1="0" y1="0" x2="0" y2="1"><stop offset=".45" stopColor="#111318" stopOpacity="0" /><stop offset="1" stopColor="#111318" stopOpacity=".22" /></linearGradient>
+          <linearGradient id="ringUp" x1="0" y1="1" x2="0" y2="0"><stop offset=".45" stopColor="#111318" stopOpacity="0" /><stop offset="1" stopColor="#111318" stopOpacity=".22" /></linearGradient>
+        </defs>
+      </svg>
+
+      <section className="vh">
+        <div className="vh-pane vh-left">
+          <h1 className="display vh-title">
+            <span className="rise" style={{ "--d": "60ms" } as React.CSSProperties}>Crypto work,</span>
+            <span className="rise" style={{ "--d": "140ms" } as React.CSSProperties}>paid from</span>
+            <span className="rise" style={{ "--d": "220ms" } as React.CSSProperties}>a vault.</span>
           </h1>
-          <div className="hero-side rise" style={{ "--d": "320ms" } as React.CSSProperties}>
-            <p>Hire anyone for design, edits, threads or code. The budget waits in a 2 of 3 vault until the work is done, so nobody can run off with it.</p>
-            <div className="hero-actions">
-              <Link href="/post" className="btn btn-ink">Post a gig</Link>
-              <Link href="#board" className="btn btn-soft">Find work</Link>
-            </div>
+          <p className="vh-lede rise" style={{ "--d": "320ms" } as React.CSSProperties}>
+            Hire anyone for design, edits, threads or code. The budget waits in a 2 of 3 vault until the work is done.
+          </p>
+          <div className="vh-cta rise" style={{ "--d": "400ms" } as React.CSSProperties}>
+            <Link href="/post" className="cta-split"><span className="cta-label">Post a gig</span><span className="cta-arrow"><Arrow /></span></Link>
+            <Link href="#board" className="sq-soft">Find work</Link>
           </div>
         </div>
-      </section>
-
-      <section className="desk container" aria-label="Post a gig">
-        <aside className="desk-side">
-          <h2 className="side-title">One vault, three steps</h2>
-          <ol className="hops">
-            {HOPS.map((h, i) => (
-              <li key={h.t}>
-                <span className="hop-n">{i + 1}</span>
-                <span>
-                  <strong>{h.t}</strong> <span className="hop-where">{h.where}</span>
-                  <span className="hop-d">{h.d}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </aside>
-        <div className="desk-main">
-          <QuickPost />
+        <div className="vh-pane vh-right">
+          <Tickets pane className="stream vh-stream" />
+          <VaultCard />
         </div>
-        <aside className="desk-side">
-          <h2 className="side-title">Right now</h2>
-          <LiveFeed compact limit={5} />
-          <a href="#live" className="side-link">Everything that happened</a>
-        </aside>
       </section>
 
       <section id="how" className="section container">
-        <div className="sec-head" data-reveal>
-          <h2 className="h2">The money is locked before the work starts</h2>
-          <p className="lede">Every gig gets its own vault on Squads. Two of three signatures move it, and you can open it on-chain from the gig page.</p>
+        <h2 className="display big-title" data-reveal>Money you<br />can see</h2>
+        <div className="rcards" data-reveal>
+          <article className="rcard">
+            <Ring size={440} className="ring-a" />
+            <span className="rtag rtag-a">2 of 3</span>
+            <div className="plate" aria-hidden>
+              <div className="plate-well">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#111318" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" /><circle cx="12" cy="15.5" r="1.4" fill="#111318" /></svg>
+              </div>
+            </div>
+            <h3 className="display rcard-title">Nobody holds<br />it alone</h3>
+            <p className="rcard-desc">Every gig gets its own Squads vault. Two of three signatures move it, us included.</p>
+          </article>
+
+          <article className="rcard">
+            <svg className="arc" viewBox="0 0 400 200" aria-hidden>
+              <path id="arcPath" d="M20 190 A180 180 0 0 1 380 190" fill="none" stroke="url(#ringDown)" strokeWidth="1" />
+              <path d="M20 190 A180 180 0 0 1 380 190" fill="none" stroke="#111318" strokeOpacity=".1" strokeWidth="1" />
+              <circle r="5" fill="#111318"><animateMotion dur="3.2s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines=".6 0 .4 1"><mpath href="#arcPath" /></animateMotion></circle>
+            </svg>
+            <span className="rtag rtag-from">Poster</span>
+            <span className="rtag rtag-to">Worker</span>
+            <h3 className="display rcard-title">Paid the moment<br />it&apos;s done</h3>
+            <p className="rcard-desc">They deliver, you both sign, and the vault sends the budget straight to their wallet.</p>
+          </article>
+
+          <article className="rcard">
+            <Ring size={460} className="ring-o" />
+            <Ring size={250} className="ring-i" />
+            <span className="rtag rtag-c">SOL or USDC</span>
+            <div className="badge" aria-hidden>
+              <div className="badge-in">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#111318" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              </div>
+            </div>
+            <h3 className="display rcard-title">Any online<br />crypto work</h3>
+            <p className="rcard-desc">Design, video, threads, code, community and research. Nothing in person, nothing risky.</p>
+          </article>
         </div>
-        <div className="mosaic" data-reveal>
-          <div className="tile t-toast" aria-label="A payout notification">
-            <div className="toast">
-              <span className="toast-ic">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-              </span>
-              <span>
-                <b>Payout sent</b>
-                <span>The vault paid the worker. Both of you signed.</span>
-              </span>
-              <time>just now</time>
-            </div>
-          </div>
 
-          <div className="tile t-lock">
-            <h3><em>Lock</em> the budget.<br />Then start the work.</h3>
-            <p>One signature when you hire. The worker sees a full vault before they lift a finger.</p>
-            <div className="win win-back" aria-hidden>
-              <div className="win-bar"><i /><i /><i /></div>
-              <div className="win-body">
-                <span className="win-title">Logo for a Solana token, 3 options</span>
-                <span className="win-line" style={{ width: "80%" }} />
-                <span className="win-line" style={{ width: "56%" }} />
-              </div>
-            </div>
-            <div className="win win-front" aria-hidden>
-              <div className="win-bar"><i /><i /><i /></div>
-              <div className="win-body">
-                <span className="label">Locked in the vault</span>
-                <span className="win-amt">2.5<small>SOL</small></span>
-                <span className="win-line" style={{ width: "64%" }} />
-              </div>
-            </div>
-            <span className="float-pill pill-locked" aria-hidden><span className="tick"><Tick /></span>Budget locked</span>
-            <span className="float-pill pill-sig" aria-hidden>Signatures<span className="sig-dots"><i /><i /><i className="off" /></span></span>
-            <svg className="cursor" width="30" height="35" viewBox="0 0 24 28" aria-hidden><path d="M3 2l17 11.5-7.4 1.4 4.3 8.2-3.3 1.7-4.3-8.2L3.6 22z" fill="#fff" stroke="#2b2b2b" strokeWidth="1.3" strokeLinejoin="round" /></svg>
-          </div>
+        <div className="find-card" data-reveal>
+          <h3 className="display">Find work<br />that&apos;s paid for</h3>
+          <Finder />
+        </div>
+      </section>
 
-          <div className="tile t-sigs">
-            <span className="chip-tag">The vault</span>
-            <h3>2 of 3</h3>
-            <p>signatures move the money. Nobody can take it alone, us included.</p>
-            <ul className="signs">
-              <li className="is-signed"><span className="sig" /><b>Worker</b><span>Signed</span></li>
-              <li className="is-signed"><span className="sig" /><b>Poster</b><span>Signed</span></li>
-              <li><span className="sig" /><b>Referee</b><span>Only in disputes</span></li>
-            </ul>
+      <section className="section container" aria-label="Post a gig">
+        <div className="duo" data-reveal>
+          <div className="duo-left">
+            <h2 className="display duo-title">Post a gig<br />in a minute</h2>
+            <ol className="steps3">
+              {HOPS.map((h, i) => (
+                <li key={h.t}><span className="n">{i + 1}</span><span><strong>{h.t}</strong><span>{h.d}</span></span></li>
+              ))}
+            </ol>
           </div>
-
-          <div className="tile t-cats">
-            <h3>Online crypto<br />work only.</h3>
-            <p>Nothing in person, nothing risky.</p>
-            <span className="cat-chip is-tilt" aria-hidden>{CATEGORIES[1]}</span>
-            <div className="cat-chips">
-              {CATEGORIES.filter((_, i) => i !== 1).map((c) => <span key={c} className="cat-chip">{c}</span>)}
-            </div>
-          </div>
-
-          <div className="tile t-search">
-            <h3>Find work<br />that&apos;s paid for</h3>
-            <Finder />
-          </div>
+          <div className="duo-right"><QuickPost /></div>
         </div>
       </section>
 
       <section id="board" className="section container" data-reveal>
-        <div className="sec-head">
-          <h2 className="h2">Work that&apos;s already paid for</h2>
+        <div className="head-c">
+          <h2 className="display big-title">Work that&apos;s<br />paid for</h2>
           <p className="lede">Every gig here has a budget waiting to be locked. Apply, get hired, and the money is in the vault before you start.</p>
         </div>
         <Board />
       </section>
 
       <section id="live" className="section container" data-reveal>
-        <div className="sec-head">
-          <h2 className="h2">Every payout, out in the open</h2>
+        <div className="head-c">
+          <h2 className="display big-title">Out in<br />the open</h2>
           <p className="lede">New gigs, locked budgets and payouts as they happen. Only real activity from the board.</p>
         </div>
         <LiveFeed />
       </section>
 
       <section className="section container" data-reveal>
-        <div className="sec-head">
-          <h2 className="h2">Hiring in crypto, compared</h2>
+        <div className="head-c">
+          <h2 className="display big-title">Hiring,<br />compared</h2>
           <p className="lede">What it usually takes to pay someone for work, and what changes when the budget is locked first.</p>
         </div>
         <div className="panel table-wrap">
@@ -186,8 +172,8 @@ export default function Home() {
       </section>
 
       <section className="section container" data-reveal>
-        <div className="sec-head">
-          <h2 className="h2">Questions</h2>
+        <div className="head-c">
+          <h2 className="display big-title">Questions</h2>
           <p className="lede">More detail in the <Link href="/docs" className="inline-link">docs</Link>.</p>
         </div>
         <div className="panel faq">
@@ -201,13 +187,17 @@ export default function Home() {
       </section>
 
       <section className="section container" data-reveal>
-        <div className="cta panel">
-          <Bunny full size={150} id="gigs-cta" title="GIGS waving" ground={false} />
-          <h2 className="cta-title">Somebody out there can do it.</h2>
-          <p className="lede">Post the job, pick who you like, and pay them from a vault they can see is full. Posting is free.</p>
-          <Link href="/post" className="btn btn-ink">Post a gig</Link>
+        <div className="end">
+          <div className="end-copy">
+            <h2 className="display end-title">Somebody out<br />there can do it.</h2>
+            <p>Post the job, pick who you like, and pay them from a vault they can see is full. Posting is free.</p>
+            <Link href="/post" className="cta-split"><span className="cta-label">Post a gig</span><span className="cta-arrow"><Arrow /></span></Link>
+          </div>
+          <div className="end-art">
+            <Bunny full size={190} id="gigs-cta" title="GIGS waving" ground={false} />
+          </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

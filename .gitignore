@@ -47,3 +47,4 @@ next-env.d.ts
 .tickets.png
 .tickets-crop.png
 .sec.cjs
+.ext.cjs

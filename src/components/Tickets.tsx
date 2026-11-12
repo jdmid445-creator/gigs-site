@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
  */
 const PALETTE = ["#DCEBB4", "#F4E3A6", "#C9E6D6", "#F3CDB4", "#DCD5F3", "#F1D3E2", "#E6EFC0"];
 
-export default function Tickets() {
+export default function Tickets({ pane = false, className = "stream" }: { pane?: boolean; className?: string }) {
   const wrap = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -124,11 +124,11 @@ export default function Tickets() {
         camera.updateProjectionMatrix();
         const viewH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI) / 360);
         const viewW = viewH * camera.aspect;
-        narrow = w < 760;
-        scale = narrow ? 0.62 : Math.min(1.35, Math.max(0.95, viewW / 24));
+        narrow = w < (pane ? 420 : 760);
+        scale = pane ? Math.min(1.05, Math.max(0.62, viewW / 15)) : narrow ? 0.62 : Math.min(1.35, Math.max(0.95, viewW / 24));
         span = viewW * 1.3;
         amp = viewH * (narrow ? 0.06 : 0.1);
-        lift = viewH * (narrow ? 0.22 : 0.15);
+        lift = pane ? viewH * 0.05 : viewH * (narrow ? 0.22 : 0.15);
         band = viewH * (narrow ? 0.06 : 0.075);
       };
       resize();
@@ -229,7 +229,8 @@ export default function Tickets() {
     })();
 
     return () => { dead = true; cleanup(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={wrap} className="stream" aria-hidden="true" />;
+  return <div ref={wrap} className={className} aria-hidden="true" />;
 }

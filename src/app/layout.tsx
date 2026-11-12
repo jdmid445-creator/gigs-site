@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/geist";
+import "@fontsource/figtree/500.css";
+import "@fontsource/figtree/600.css";
+import "@fontsource/instrument-sans/400.css";
+import "@fontsource/instrument-sans/500.css";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import Header from "@/components/Header";
