@@ -108,3 +108,14 @@ create table if not exists reviews (
 );
 create index if not exists reviews_subject_idx on reviews (subject, created_at desc);
 alter table reviews enable row level security;
+
+-- ---------- added: messages between the poster and the hired worker (run this part if you ran the file before) ----------
+create table if not exists messages (
+  id          uuid primary key default gen_random_uuid(),
+  gig_id      uuid not null references gigs(id) on delete cascade,
+  sender      text not null,
+  body        text not null check (char_length(body) between 1 and 2000),
+  created_at  timestamptz default now()
+);
+create index if not exists messages_gig_idx on messages (gig_id, created_at);
+alter table messages enable row level security;

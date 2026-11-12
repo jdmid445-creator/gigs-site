@@ -7,6 +7,7 @@ const SECTIONS = [
   ["overview", "Overview"],
   ["flow", "A gig, start to finish"],
   ["vault", "The vault"],
+  ["messages", "Messages"],
   ["disputes", "Disputes"],
   ["profiles", "Profiles and reviews"],
   ["allowed", "What's allowed"],
@@ -47,6 +48,14 @@ export default function Docs() {
           be changed. You can open any gig&apos;s vault on Squads or Solscan from its page.
         </p>
         <p>The referee key can only vote. It can&apos;t start a payment and can&apos;t move funds on its own.</p>
+
+        <h2 id="messages">Messages</h2>
+        <p>
+          Once someone is hired and the budget is locked, the gig page opens a private thread between the poster and the worker
+          for questions, drafts and links. Nobody else can read it. If a dispute is opened, the referee can read the thread too,
+          so keep the important details there.
+        </p>
+        <p>Nobody on {SITE_NAME} will ever ask for your seed phrase or private key, and messages that ask for one are blocked.</p>
 
         <h2 id="disputes">Disputes</h2>
         <p>

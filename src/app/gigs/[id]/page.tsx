@@ -6,6 +6,7 @@ import { useSession } from "@/components/Providers";
 import { Stamp, amountParts } from "@/components/Slip";
 import Bunny from "@/components/Bunny";
 import Avatar from "@/components/Avatar";
+import Messages from "@/components/Messages";
 import { UsdHint } from "@/components/usePrices";
 import { api, ago, friendlyWalletError, short, signAndSend } from "@/lib/client";
 import { explorerAccount, explorerTx, squadsVaultUrl, SITE_NAME } from "@/lib/config";
@@ -159,6 +160,20 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
           </div>
 
           <ActionPanel />
+
+          {d.me && g.worker && ["funded", "submitted", "paid", "refunded"].includes(g.status) &&
+            (d.role === "poster" || d.role === "worker" || (d.role === "referee" && (d.disputes?.length ?? 0) > 0)) && (
+            <Messages
+              gigId={g.id}
+              me={d.me}
+              poster={g.poster}
+              worker={g.worker}
+              names={{
+                [g.poster]: d.poster?.handle ? `@${d.poster.handle}` : undefined,
+                ...Object.fromEntries(d.applicantProfiles.filter((p) => p.handle).map((p) => [p.wallet, `@${p.handle}`])),
+              }}
+            />
+          )}
 
           {d.submissions && d.submissions.length > 0 && (
             <div className="panel pad">
