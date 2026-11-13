@@ -18,7 +18,7 @@
   --lilac: #6E54B5;
   --lilac-soft: #EEE9FA;
   --lime: #A9D81C;
-  --font: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --r-ctl: 12px;
   --r-card: 20px;
   --r-panel: 24px;
@@ -427,6 +427,7 @@ a.gig-row:hover { background: var(--sunk); }
 /* Motion */
 @media (prefers-reduced-motion: no-preference) {
   .rise { opacity: 0; transform: translateY(16px); animation: rise .9s var(--ease) var(--d, 0ms) forwards; }
+  html:not(.fonts-ready) .rise { animation-play-state: paused; }
   @keyframes rise { to { opacity: 1; transform: none; } }
   .desk { animation: lift 1s var(--ease) .45s both; }
   @keyframes lift { from { opacity: 0; transform: translateY(40px); } }
@@ -510,8 +511,8 @@ a.gig-row:hover { background: var(--sunk); }
 }
 
 /* ================= Homepage: split-pane vault layout (adapted from MotionSites "Crypto Vault") ================= */
-body:has(.home) { font-family: 'Instrument Sans', var(--font); letter-spacing: -0.01em; }
-.home { --display: 'Figtree', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif; --r-pane: 26px; --r-sq: 14px; }
+body:has(.home) { font-family: var(--font-instrument), var(--font); letter-spacing: -0.01em; }
+.home { --display: var(--font-figtree), var(--font-instrument), ui-sans-serif, system-ui, sans-serif; --r-pane: 26px; --r-sq: 14px; }
 .home .display { font-family: var(--display); font-weight: 500; text-transform: uppercase; letter-spacing: -0.05em; }
 .home .lede { font-size: 17px; }
 
