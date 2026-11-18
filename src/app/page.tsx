@@ -5,7 +5,8 @@ import LiveFeed from "@/components/LiveFeed";
 import Reveal from "@/components/Reveal";
 import Bunny from "@/components/Bunny";
 import Finder from "@/components/Finder";
-import Pulse from "@/components/Pulse";
+import VaultHero from "@/components/VaultHero";
+import VaultFeatures from "@/components/VaultFeatures";
 
 const HOPS = [
   { t: "Post", d: "Say what you need, the deadline and the budget. Nothing leaves your wallet yet." },
@@ -29,43 +30,18 @@ const FAQ = [
   ["What can I get paid in?", "SOL or USDC. The poster picks when they post, and the amount locked is the amount paid out, minus any platform fee shown up front."],
 ];
 
-const Icon = ({ d }: { d: string }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={d} /></svg>
-);
-const LOCK = "M6.5 10.5h11a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19v-7a1.5 1.5 0 0 1 1.5-1.5zM8 10.5V7.5a4 4 0 0 1 8 0v3";
-const SEND = "M4 12h14M13 6l6 6-6 6";
-const CHECK = "M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0zM8.5 12.5l2.5 2.5 4.5-5";
-
-const POINTS = [
-  { icon: LOCK, t: "Nobody holds it alone", d: "Every gig gets its own Squads vault. Two of three signatures move it, and that includes us." },
-  { icon: SEND, t: "Paid the moment it’s done", d: "They deliver, you both sign, and the vault sends the budget straight to their wallet." },
-  { icon: CHECK, t: "Any online crypto work", d: "Design, video, threads, code, community and research. Nothing in person, nothing risky." },
-];
-
 export default function Home() {
   return (
     <div className="home">
       <Reveal />
 
-      <Pulse />
+      <VaultHero />
 
-      <section id="how" className="section container">
-        <div className="head-l" data-reveal>
-          <h2 className="display big-title">Money you can see</h2>
-          <p className="lede">The budget is locked before anyone starts, and it only moves when two of the three signers agree.</p>
-        </div>
-        <div className="points" data-reveal>
-          {POINTS.map((p) => (
-            <article key={p.t} className="point">
-              <span className="point-icon"><Icon d={p.icon} /></span>
-              <h3 className="point-title">{p.t}</h3>
-              <p className="point-desc">{p.d}</p>
-            </article>
-          ))}
-        </div>
+      <VaultFeatures />
 
+      <section className="section container" aria-label="Search open gigs">
         <div className="find-card" data-reveal>
-          <h3 className="display">Search open gigs</h3>
+          <h2 className="display find-title">Search open gigs</h2>
           <Finder />
         </div>
       </section>
