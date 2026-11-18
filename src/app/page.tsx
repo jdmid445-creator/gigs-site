@@ -5,7 +5,7 @@ import LiveFeed from "@/components/LiveFeed";
 import Reveal from "@/components/Reveal";
 import Bunny from "@/components/Bunny";
 import Finder from "@/components/Finder";
-import PaidTicket from "@/components/PaidTicket";
+import Pulse from "@/components/Pulse";
 
 const HOPS = [
   { t: "Post", d: "Say what you need, the deadline and the budget. Nothing leaves your wallet yet." },
@@ -47,26 +47,7 @@ export default function Home() {
     <div className="home">
       <Reveal />
 
-      <section className="vh">
-        <div className="vh-pane vh-left">
-          <div className="vh-copy">
-            <h1 className="display vh-title">
-              <span className="rise" style={{ "--d": "60ms" } as React.CSSProperties}>Crypto work,</span>
-              <span className="rise" style={{ "--d": "120ms" } as React.CSSProperties}>paid from a vault</span>
-            </h1>
-            <p className="vh-lede rise" style={{ "--d": "180ms" } as React.CSSProperties}>
-              Hire anyone for design, edits, threads or code. The budget waits in a 2 of 3 vault until the work is done.
-            </p>
-            <div className="vh-cta rise" style={{ "--d": "240ms" } as React.CSSProperties}>
-              <Link href="/post" className="btn-go">Post a gig</Link>
-              <Link href="#board" className="sq-soft">Find work</Link>
-            </div>
-          </div>
-        </div>
-        <div className="vh-pane vh-right">
-          <PaidTicket />
-        </div>
-      </section>
+      <Pulse />
 
       <section id="how" className="section container">
         <div className="head-l" data-reveal>

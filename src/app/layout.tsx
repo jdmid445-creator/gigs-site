@@ -16,6 +16,11 @@ const instrument = localFont({
   variable: "--font-instrument", display: "swap", preload: true, adjustFontFallback: "Arial",
 });
 
+const michroma = localFont({
+  src: [{ path: "./fonts/michroma-latin-400-normal.woff2", weight: "400" }],
+  variable: "--font-michroma", display: "swap", preload: true, adjustFontFallback: "Arial",
+});
+
 /** Holds the opening rise-in until the real fonts are ready (never longer than 1.2s), so the headline animates in already in its final font. */
 const FONTS_READY = `(function(){var d=document.documentElement,done=function(){d.classList.add('fonts-ready')};try{if(document.fonts&&document.fonts.ready){document.fonts.ready.then(done)}else{done()}}catch(e){done()}setTimeout(done,1200)})();`;
 
@@ -39,7 +44,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${figtree.variable} ${instrument.variable}`}>
+    <html lang="en" className={`${figtree.variable} ${instrument.variable} ${michroma.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: FONTS_READY }} />
       </head>
