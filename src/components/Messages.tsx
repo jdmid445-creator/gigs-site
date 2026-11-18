@@ -5,10 +5,12 @@ import { markRead } from "@/lib/inbox";
 
 type Msg = { id: string; sender: string; body: string; created_at: string };
 
-/** Private thread between the poster and the hired worker (the referee joins in a dispute). */
-export default function Messages({ gigId, me, poster, worker, names, title = "Messages", tall = false }: {
-  gigId: string; me: string; poster: string; worker: string; names: Record<string, string | undefined>; title?: string; tall?: boolean;
+/** Private thread between a gig's poster and one other wallet (the referee can join the hired worker's thread in a dispute). */
+export default function Messages({ gigId, peer, me, poster, worker, names, title = "Messages", tall = false }: {
+  gigId: string; peer?: string | null; me: string; poster: string; worker: string; names: Record<string, string | undefined>; title?: string; tall?: boolean;
 }) {
+  const url = `/api/gigs/${gigId}/messages${peer ? `?peer=${encodeURIComponent(peer)}` : ""}`;
+  const readKey = `${gigId}:${peer || me}`;
   const [msgs, setMsgs] = useState<Msg[] | null>(null);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -18,12 +20,12 @@ export default function Messages({ gigId, me, poster, worker, names, title = "Me
 
   const load = useCallback(async () => {
     try {
-      const r = await api<{ messages: Msg[] }>(`/api/gigs/${gigId}/messages`);
+      const r = await api<{ messages: Msg[] }>(url);
       setMsgs(r.messages);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     }
-  }, [gigId]);
+  }, [url]);
 
   useEffect(() => {
     load();
@@ -33,19 +35,19 @@ export default function Messages({ gigId, me, poster, worker, names, title = "Me
 
   useEffect(() => {
     const lastAt = msgs?.[msgs.length - 1]?.created_at;
-    if (lastAt) markRead(gigId, lastAt);
+    if (lastAt) markRead(readKey, lastAt);
     if (msgs && msgs.length !== count.current && list.current) {
       list.current.scrollTop = list.current.scrollHeight;
       count.current = msgs.length;
     }
-  }, [msgs]);
+  }, [msgs, readKey]);
 
   async function send() {
     const body = text.trim();
     if (!body || busy) return;
     setBusy(true); setErr("");
     try {
-      const r = await api<{ message: Msg }>(`/api/gigs/${gigId}/messages`, { body });
+      const r = await api<{ message: Msg }>(url, { body });
       setMsgs((m) => [...(m ?? []), r.message]);
       setText("");
     } catch (e) {
@@ -57,15 +59,17 @@ export default function Messages({ gigId, me, poster, worker, names, title = "Me
 
   const label = (w: string) => {
     if (w === me) return "You";
-    const role = w === poster ? "Poster" : w === worker ? "Worker" : "Referee";
-    return names[w] ? `${names[w]} · ${role}` : `${short(w)} · ${role}`;
+    const name = names[w] ?? short(w);
+    const role = w === poster ? "Poster" : w === worker && worker ? "Worker" : w === peer || !peer ? "" : "Referee";
+    return role ? `${name} · ${role}` : name;
   };
-  const other = me === poster ? "the worker" : me === worker ? "the poster" : "both sides";
+  const otherWallet = me === poster ? (peer || worker) : !peer || peer === me ? poster : null;
+  const other = otherWallet ? names[otherWallet] ?? (otherWallet === poster ? "the poster" : short(otherWallet)) : "both sides";
 
   return (
     <div className="panel pad">
       <h2 className="panel-title">{title}</h2>
-      <p className="hint">Only you and {other} can see this. The referee can read it if a dispute is opened. Nobody here will ever ask for your seed phrase.</p>
+      <p className="hint">Private between you and {other}, shown by wallet or @handle only. If a dispute is opened on a hired gig, the referee can read it. Nobody here will ever ask for your seed phrase.</p>
       <div className={`chat-list${tall ? " tall" : ""}`} ref={list} aria-live="polite">
         {msgs === null && <p className="hint">Loading…</p>}
         {msgs && msgs.length === 0 && <p className="hint chat-empty">No messages yet. Say hi, share files or ask a question about the brief.</p>}

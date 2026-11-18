@@ -5,10 +5,10 @@ import { useSession } from "./Providers";
 import { api } from "@/lib/client";
 import { isUnread } from "@/lib/inbox";
 
-type T = { gig: { id: string }; last: { sender: string; created_at: string } | null };
+type T = { key: string; last: { sender: string; created_at: string } | null };
 
-/** Chat icon in the header, with a dot when someone wrote to you. Only shows when you're signed in. */
-export default function InboxButton() {
+/** How many threads have something new you haven't read, refreshed every 30 seconds. */
+function useUnread() {
   const { wallet } = useSession();
   const [threads, setThreads] = useState<T[]>([]);
   const [, bump] = useState(0);
@@ -21,8 +21,22 @@ export default function InboxButton() {
     window.addEventListener("gigs:read", onRead);
     return () => { clearInterval(t); window.removeEventListener("gigs:read", onRead); };
   }, [wallet]);
-  if (!wallet) return null;
-  const unread = threads.filter((t) => isUnread(t.gig.id, t.last, wallet)).length;
+  return wallet ? threads.filter((t) => isUnread(t.key, t.last, wallet)).length : 0;
+}
+
+/** "Messages" in the top navigation, with the unread count. */
+export function NavMessages() {
+  const unread = useUnread();
+  return (
+    <Link href="/messages" className="nav-msg" aria-label={unread ? `Messages, ${unread} unread` : undefined}>
+      Messages{unread > 0 && <span className="nav-count">{unread > 9 ? "9+" : unread}</span>}
+    </Link>
+  );
+}
+
+/** Chat icon in the header on phones, where the navigation links are hidden. */
+export default function InboxButton() {
+  const unread = useUnread();
   return (
     <Link href="/messages" className="icon-btn inbox-btn" aria-label={unread ? `Messages, ${unread} unread` : "Messages"}>
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

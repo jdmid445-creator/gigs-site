@@ -7,8 +7,10 @@ import { api, ago, short } from "@/lib/client";
 import { isUnread } from "@/lib/inbox";
 
 type Thread = {
+  key: string;
+  peer: string;
   gig: { id: string; title: string; status: string; amount: string; currency: string; poster: string; worker: string | null };
-  role: "poster" | "worker" | "referee";
+  role: "poster" | "worker" | "seller" | "referee";
   other: string | null;
   otherHandle: string | null;
   last: { sender: string; body: string; created_at: string } | null;
@@ -16,7 +18,8 @@ type Thread = {
   updated: string;
 };
 
-const STATUS: Record<string, string> = { funded: "In progress", submitted: "Delivered", paid: "Paid", refunded: "Refunded" };
+const STATUS: Record<string, string> = { open: "Open", hiring: "Hiring", funded: "In progress", submitted: "Delivered", paid: "Paid", refunded: "Refunded", cancelled: "Closed" };
+const ROLE: Record<Thread["role"], string> = { poster: "you posted this gig", worker: "you\u2019re the worker", seller: "you asked about this gig", referee: "you\u2019re the referee" };
 
 export default function Inbox() {
   const { wallet, signIn, setPickerOpen, loading } = useSession();
@@ -41,11 +44,15 @@ export default function Inbox() {
   }, [wallet, load]);
 
   useEffect(() => {
-    const q = new URLSearchParams(window.location.search).get("gig");
-    if (q) setOpen(q);
+    const sp = new URLSearchParams(window.location.search);
+    const g = sp.get("gig"), p = sp.get("peer");
+    if (g) setOpen(p ? `${g}:${p}` : g);
   }, []);
   useEffect(() => {
-    if (!open && threads?.length && window.matchMedia("(min-width: 900px)").matches) setOpen(threads[0].gig.id);
+    if (!threads?.length) return;
+    // a link with only ?gig= opens the first thread on that gig
+    if (open && !open.includes(":")) { const t = threads.find((x) => x.gig.id === open); if (t) setOpen(t.key); return; }
+    if (!open && window.matchMedia("(min-width: 900px)").matches) setOpen(threads[0].key);
   }, [threads, open]);
 
   if (loading) return <div className="page container"><p className="muted">Loading…</p></div>;
@@ -55,7 +62,7 @@ export default function Inbox() {
         <div className="page-head">
           <div>
             <h1>Messages</h1>
-            <p className="lede">Sign in with your wallet to see your conversations with the people you hired or worked for.</p>
+            <p className="lede">Sign in with your wallet to see your conversations about gigs you posted, asked about or worked on.</p>
           </div>
           <button className="btn btn-ink" onClick={() => signIn().catch(() => setPickerOpen(true))}>Sign in</button>
         </div>
@@ -63,14 +70,14 @@ export default function Inbox() {
     );
 
   const name = (t: Thread) => t.role === "referee" ? "Dispute" : t.otherHandle ? `@${t.otherHandle}` : short(t.other ?? "");
-  const current = threads?.find((t) => t.gig.id === open) ?? null;
+  const current = threads?.find((t) => t.key === open) ?? null;
 
   return (
     <div className="page container">
       <div className="page-head">
         <div>
           <h1>Messages</h1>
-          <p className="lede">Every conversation with the people you hired or worked for, in one place.</p>
+          <p className="lede">Private chats about your gigs, buyer to seller, shown by wallet or @handle only.</p>
         </div>
       </div>
 
@@ -78,7 +85,7 @@ export default function Inbox() {
 
       {threads && threads.length === 0 ? (
         <div className="panel pad inbox-empty">
-          <p className="prose">No conversations yet. A thread opens on a gig as soon as someone is hired and the budget is locked.</p>
+          <p className="prose">No conversations yet. Open any gig to message the poster, or wait for someone to ask about yours.</p>
           <div className="inbox-empty-cta">
             <Link className="btn btn-ink" href="/post">Post a gig</Link>
             <Link className="btn btn-soft" href="/#board">Find work</Link>
@@ -89,9 +96,9 @@ export default function Inbox() {
           <div className="panel inbox-list" role="list">
             {threads === null && <p className="hint pad">Loading…</p>}
             {threads?.map((t) => {
-              const unread = isUnread(t.gig.id, t.last, wallet);
+              const unread = isUnread(t.key, t.last, wallet);
               return (
-                <button key={t.gig.id} role="listitem" className={`thread${open === t.gig.id ? " on" : ""}${unread ? " unread" : ""}`} onClick={() => setOpen(t.gig.id)}>
+                <button key={t.key} role="listitem" className={`thread${open === t.key ? " on" : ""}${unread ? " unread" : ""}`} onClick={() => setOpen(t.key)}>
                   <span className="thread-top">
                     <span className="thread-name">{name(t)}</span>
                     <span className="thread-time">{t.last ? ago(t.last.created_at) : ""}</span>
@@ -112,11 +119,12 @@ export default function Inbox() {
                 <div className="inbox-thread-head">
                   <button className="btn btn-soft inbox-back" onClick={() => setOpen(null)}>← All messages</button>
                   <Link className="inline-link" href={`/gigs/${current.gig.id}`}>{current.gig.title}</Link>
-                  <span className="hint">{STATUS[current.gig.status] ?? current.gig.status} · you&apos;re the {current.role}</span>
+                  <span className="hint">{STATUS[current.gig.status] ?? current.gig.status} · {ROLE[current.role]}</span>
                 </div>
                 <Messages
-                  key={current.gig.id}
+                  key={current.key}
                   gigId={current.gig.id}
+                  peer={current.peer}
                   me={wallet}
                   poster={current.gig.poster}
                   worker={current.gig.worker ?? ""}

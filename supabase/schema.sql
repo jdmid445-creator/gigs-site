@@ -109,13 +109,18 @@ create table if not exists reviews (
 create index if not exists reviews_subject_idx on reviews (subject, created_at desc);
 alter table reviews enable row level security;
 
--- ---------- added: messages between the poster and the hired worker (run this part if you ran the file before) ----------
+-- ---------- added: private messages between a gig's poster and one other wallet (run this part if you ran the file before) ----------
+-- One thread per (gig, peer): peer is the wallet talking to the poster, an interested seller before hiring or the hired worker after.
 create table if not exists messages (
   id          uuid primary key default gen_random_uuid(),
   gig_id      uuid not null references gigs(id) on delete cascade,
+  peer        text,
   sender      text not null,
   body        text not null check (char_length(body) between 1 and 2000),
   created_at  timestamptz default now()
 );
-create index if not exists messages_gig_idx on messages (gig_id, created_at);
+alter table messages add column if not exists peer text;
+update messages m set peer = g.worker from gigs g where m.peer is null and g.id = m.gig_id;
+create index if not exists messages_thread_idx on messages (gig_id, peer, created_at);
+create index if not exists messages_peer_idx on messages (peer, created_at desc);
 alter table messages enable row level security;

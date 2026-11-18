@@ -51,9 +51,11 @@ export default function Docs() {
 
         <h2 id="messages">Messages</h2>
         <p>
-          Once someone is hired and the budget is locked, the gig page opens a private thread between the poster and the worker
-          for questions, drafts and links. Nobody else can read it. If a dispute is opened, the referee can read the thread too,
-          so keep the important details there.
+          Anyone signed in can message a gig&apos;s poster privately from the gig page, before applying or after. The poster can
+          reply to anyone who writes or applies, and once someone is hired the same thread carries on for drafts and links.
+          Each chat is just between the poster and one other person, and shows only wallets or @handles: no emails, phone
+          numbers or socials needed. If a dispute is opened on a hired gig, the referee can read that thread too, so keep the
+          important details there. Every conversation is under Messages at the top of the site.
         </p>
         <p>Nobody on {SITE_NAME} will ever ask for your seed phrase or private key, and messages that ask for one are blocked.</p>
 

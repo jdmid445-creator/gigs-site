@@ -3,7 +3,7 @@ import WalletButton from "./WalletButton";
 import CopyCA from "./CopyCA";
 import Logo from "./Logo";
 import HeaderFade from "./HeaderFade";
-import InboxButton from "./InboxButton";
+import InboxButton, { NavMessages } from "./InboxButton";
 import { SITE_NAME, X_URL } from "@/lib/config";
 
 export function XIcon() {
@@ -26,6 +26,7 @@ export default function Header() {
         <nav className="seg" aria-label="Main">
           <Link href="/#board">Gigs</Link>
           <Link href="/#how">How it works</Link>
+          <NavMessages />
           <Link href="/leaderboard">Leaderboard</Link>
           <Link href="/docs">Docs</Link>
         </nav>

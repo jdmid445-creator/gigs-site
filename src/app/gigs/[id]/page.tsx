@@ -7,6 +7,7 @@ import { Stamp, amountParts } from "@/components/Slip";
 import Bunny from "@/components/Bunny";
 import Avatar from "@/components/Avatar";
 import Messages from "@/components/Messages";
+import GigThreads from "@/components/GigThreads";
 import { UsdHint } from "@/components/usePrices";
 import { api, ago, friendlyWalletError, short, signAndSend } from "@/lib/client";
 import { explorerAccount, explorerTx, squadsVaultUrl, SITE_NAME } from "@/lib/config";
@@ -161,19 +162,40 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
 
           <ActionPanel />
 
-          {d.me && g.worker && ["funded", "submitted", "paid", "refunded"].includes(g.status) &&
-            (d.role === "poster" || d.role === "worker" || (d.role === "referee" && (d.disputes?.length ?? 0) > 0)) && (
-            <Messages
-              gigId={g.id}
-              me={d.me}
-              poster={g.poster}
-              worker={g.worker}
-              names={{
-                [g.poster]: d.poster?.handle ? `@${d.poster.handle}` : undefined,
-                ...Object.fromEntries(d.applicantProfiles.filter((p) => p.handle).map((p) => [p.wallet, `@${p.handle}`])),
-              }}
-            />
-          )}
+          {(() => {
+            const names = {
+              [g.poster]: d.poster?.handle ? `@${d.poster.handle}` : undefined,
+              ...Object.fromEntries(d.applicantProfiles.filter((p) => p.handle).map((p) => [p.wallet, `@${p.handle}`])),
+            };
+            const hired = !!g.worker && ["funded", "submitted", "paid", "refunded"].includes(g.status);
+            const open = g.status === "open" || g.status === "hiring";
+            if (!d.me) {
+              return open ? (
+                <div className="panel pad">
+                  <h2 className="panel-title">Questions about this gig?</h2>
+                  <p className="hint">Sign in with your wallet to message the poster privately. Only your wallet or @handle is shown.</p>
+                  <button className="btn btn-soft" style={{ justifySelf: "start" }} onClick={() => signIn().catch(() => setPickerOpen(true))}>Sign in to message</button>
+                </div>
+              ) : null;
+            }
+            if (d.role === "poster") {
+              return (
+                <>
+                  {hired && <Messages gigId={g.id} peer={g.worker} me={d.me} poster={g.poster} worker={g.worker ?? ""} names={names} title="Messages with your worker" />}
+                  <GigThreads gigId={g.id} skip={hired ? g.worker : null} />
+                </>
+              );
+            }
+            if (d.role === "referee") {
+              return hired && (d.disputes?.length ?? 0) > 0
+                ? <Messages gigId={g.id} peer={g.worker} me={d.me} poster={g.poster} worker={g.worker ?? ""} names={names} title="Messages" />
+                : null;
+            }
+            if (d.role === "worker" || open || d.applied) {
+              return <Messages gigId={g.id} peer={d.me} me={d.me} poster={g.poster} worker={g.worker ?? ""} names={names} title={d.role === "worker" ? "Messages with the poster" : "Message the poster"} />;
+            }
+            return null;
+          })()}
 
           {d.submissions && d.submissions.length > 0 && (
             <div className="panel pad">
