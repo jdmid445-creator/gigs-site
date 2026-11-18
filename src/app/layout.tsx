@@ -7,7 +7,6 @@ import Footer from "@/components/Footer";
 import { SITE_NAME } from "@/lib/config";
 
 // Self-hosted and preloaded, with size-matched fallbacks, so text never jumps when the real font arrives.
-const geist = localFont({ src: "./fonts/geist-latin-wght-normal.woff2", weight: "100 900", variable: "--font-geist", display: "swap", preload: true, adjustFontFallback: "Arial" });
 const figtree = localFont({
   src: [{ path: "./fonts/figtree-latin-500-normal.woff2", weight: "500" }, { path: "./fonts/figtree-latin-600-normal.woff2", weight: "600" }],
   variable: "--font-figtree", display: "swap", preload: true, adjustFontFallback: "Arial",
@@ -40,7 +39,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${figtree.variable} ${instrument.variable}`}>
+    <html lang="en" className={`${figtree.variable} ${instrument.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: FONTS_READY }} />
       </head>
