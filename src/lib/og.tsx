@@ -8,9 +8,9 @@ import {
 import { SITE_NAME } from "./config";
 
 export const OG_SIZE = { width: 1200, height: 630 };
-const BG = "#f5f5f3";
-const INK = "#12151b";
-const MUTED = "#79808c";
+const BG = "#111212";
+const INK = "#ffffff";
+const MUTED = "#8b9097";
 
 let fonts: { name: string; data: Buffer; weight: 400 | 500 | 600; style: "normal" }[] | null = null;
 export async function ogFonts() {

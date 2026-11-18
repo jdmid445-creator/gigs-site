@@ -32,8 +32,8 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       <Card
         mood={gig.status === "paid" ? "happy" : "idle"}
         corner={
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: 20, fontSize: 24, color: locked ? "#3a4a00" : og.INK }}>
-            <div style={{ width: 14, height: 14, borderRadius: 7, background: locked ? "#c9f23d" : gig.status === "paid" ? og.INK : "transparent", border: `2.5px solid ${locked ? "#3a4a00" : og.INK}` }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: 20, fontSize: 24, color: locked ? "#A9D81C" : og.INK }}>
+            <div style={{ width: 14, height: 14, borderRadius: 7, background: locked ? "#c9f23d" : gig.status === "paid" ? og.INK : "transparent", border: `2.5px solid ${locked ? "#A9D81C" : og.INK}` }} />
             {label}
           </div>
         }

@@ -924,3 +924,4 @@ body:has(.home) .site-header.is-solid { padding-top: 12px; }
 .vf-line { left: calc(50% - 70px); width: 140px; }
 @keyframes vf-pay { 0% { transform: translateX(-70px); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(70px); opacity: 0; } }
 @media (max-width: 760px) { .vf-tag-l { left: calc(50% - 112px); } .vf-tag-r { left: calc(50% + 112px); } }
+.finder-none .btn { display: inline-flex; grid-template-columns: none; justify-content: center; padding: 0 18px; }

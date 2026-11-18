@@ -18,7 +18,7 @@ const COMPARE = [
   ["Where the money waits", "In the poster's wallet, or with a middleman", "In a vault nobody can empty alone"],
   ["Worker knows they'll get paid", "On trust", "The budget is visibly locked first"],
   ["If the work never shows", "Chase a refund", "Refund signed by the worker or referee"],
-  ["If you disagree", "Argue in DMs", "A referee casts the deciding vote"],
+  ["Talking it through", "Swap Telegram or Discord handles", "A private chat on the gig, wallet to wallet"],
   ["Track record", "Screenshots", "Profiles built from paid-out gigs"],
 ];
 
