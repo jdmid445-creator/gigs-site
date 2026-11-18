@@ -864,3 +864,29 @@ body:has(.home) .site-header.is-solid { padding-top: 12px; }
   .vx-card { width: min(64vw, 250px); }
   .vx-signers { gap: 6px 10px; font-size: 10.5px; flex-wrap: nowrap; justify-content: space-between; }
 }
+
+/* ---------- spacing around the rings: text never touches a circle ---------- */
+.vf-art { height: 410px; }
+.vf-ring { top: 230px; width: 300px; height: 300px; }
+.vf-tag-top { top: 34px; }
+.vf-tag-l, .vf-tag-r { top: 34px; }
+.vf-tag-l { left: calc(50% - 64px); }
+.vf-tag-r { left: calc(50% + 64px); }
+.vf-keyplate, .vf-coin { top: 230px; }
+.vf-node { --arc: 50deg; top: 230px; }
+.vf-node::before { top: -154.5px; }
+.vf-badge { top: 186px; }
+.vf-rep { top: 256px; }
+.vf-card-title { margin-top: 8px; }
+.vh2-vault { margin-top: clamp(96px, 9vw, 128px); }
+.vh2-rings { width: 560px; }
+
+/* header: the same space between the brand and every link */
+.seg { margin-left: 4px; }
+.brand { font-size: 18px; gap: 8px; }
+@media (max-width: 760px) {
+  .vf-tag-l { left: calc(50% - 64px); top: 34px; }
+  .vf-tag-r { left: calc(50% + 64px); top: 34px; }
+  .vf-node { --arc: 50deg; }
+  .vh2-rings { width: 420px; }
+}

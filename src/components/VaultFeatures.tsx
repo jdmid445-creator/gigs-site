@@ -8,9 +8,9 @@ const BOLT = "M13 3L5 13.5h6L10 21l8-10.5h-6L13 3z";
 // One ring per card, same size and centre in all three, so the cards read as a set.
 function Ring() {
   return (
-    <svg className="vf-ring" viewBox="0 0 340 340" aria-hidden>
-      <circle cx="170" cy="170" r="169.5" fill="none" stroke="url(#ringDown)" />
-      <circle cx="170" cy="170" r="110" fill="none" stroke="url(#ringDown)" />
+    <svg className="vf-ring" viewBox="0 0 300 300" aria-hidden>
+      <circle cx="150" cy="150" r="149.5" fill="none" stroke="url(#ringDown)" />
+      <circle cx="150" cy="150" r="100" fill="none" stroke="url(#ringDown)" />
     </svg>
   );
 }
