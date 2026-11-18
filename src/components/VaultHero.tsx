@@ -67,7 +67,7 @@ export default function VaultHero() {
       <div className="vh2-copy">
         <h1 className="vh2-title">
           <span>Crypto work,</span>
-          <span>paid from a vault</span>
+          <span>paid from <em className="vh2-hl">a vault</em></span>
         </h1>
         <p className="vh2-lede">Hire anyone for design, edits, threads or code. The budget waits in a 2 of 3 vault until the work is done.</p>
         <div className="vh2-actions">
