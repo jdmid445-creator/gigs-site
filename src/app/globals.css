@@ -890,3 +890,37 @@ body:has(.home) .site-header.is-solid { padding-top: 12px; }
   .vf-node { --arc: 50deg; }
   .vh2-rings { width: 420px; }
 }
+
+/* paid on delivery: Vault and Wallet either side of the coin, joined by one line the payment travels along */
+.vf-tag-l, .vf-tag-r { top: 230px; z-index: 2; }
+.vf-tag-l { left: calc(50% - 128px); }
+.vf-tag-r { left: calc(50% + 128px); }
+.vf-line { position: absolute; left: calc(50% - 80px); top: 230px; width: 160px; height: 1px; background: linear-gradient(90deg, rgba(255, 255, 255, .35), rgba(255, 255, 255, .12) 50%, rgba(255, 255, 255, .35)); }
+.vf-coin { z-index: 2; }
+.vf-node, .vf-node::before { all: unset; }
+.vf-node { position: absolute; left: 50%; top: 230px; z-index: 1; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px rgba(255, 255, 255, .5); opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .vf-node { animation: vf-pay 3.2s cubic-bezier(.45, 0, .55, 1) infinite; }
+  @keyframes vf-pay { 0% { transform: translateX(-80px); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(80px); opacity: 0; } }
+}
+@media (max-width: 760px) {
+  .vf-tag-l { left: calc(50% - 128px); top: 230px; }
+  .vf-tag-r { left: calc(50% + 128px); top: 230px; }
+}
+
+/* tighter art band: less empty space between the top tags and the objects */
+.vf-art { height: 330px; }
+.vf-ring { top: 176px; }
+.vf-keyplate, .vf-coin, .vf-line, .vf-node { top: 176px; }
+.vf-tag-l, .vf-tag-r { top: 176px; }
+.vf-tag-top { top: 32px; }
+.vf-badge { top: 130px; }
+.vf-rep { top: 200px; }
+@media (max-width: 760px) { .vf-tag-l, .vf-tag-r { top: 176px; } }
+.vf-coin { width: 88px; height: 88px; }
+.vf-tag-l, .vf-tag-r { min-width: 84px; padding: 0 12px; }
+.vf-tag-l { left: calc(50% - 112px); }
+.vf-tag-r { left: calc(50% + 112px); }
+.vf-line { left: calc(50% - 70px); width: 140px; }
+@keyframes vf-pay { 0% { transform: translateX(-70px); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(70px); opacity: 0; } }
+@media (max-width: 760px) { .vf-tag-l { left: calc(50% - 112px); } .vf-tag-r { left: calc(50% + 112px); } }

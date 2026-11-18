@@ -37,8 +37,10 @@ export default function VaultFeatures() {
         <article className="vf-card vf-card-mid" data-reveal>
           <div className="vf-art">
             <Ring />
+            <span className="vf-tag vf-tag-top">Two signatures</span>
             <span className="vf-tag vf-tag-l">Vault</span>
             <span className="vf-tag vf-tag-r">Wallet</span>
+            <span className="vf-line" aria-hidden />
             <span className="vf-node" aria-hidden />
             <div className="vf-coin" aria-hidden><Logo size={40} /></div>
           </div>
