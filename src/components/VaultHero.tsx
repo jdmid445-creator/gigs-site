@@ -4,23 +4,21 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Logo from "./Logo";
 
-// The opening screen: copy on a graphite pane, and a brushed-metal vault card on the right
-// that walks through one gig: funded, delivered, paid. The three dots pick the step.
+// The opening screen, one centred column: the promise, two actions, then a brushed-metal vault card
+// that walks through one gig: funded, delivered, paid. The step buttons under it pick the step.
 
 const STEPS = [
-  { key: "Funded", title: ["Locked", "before work"], sub: "The budget sits in a 2 of 3 vault before anyone starts", signed: [true, false, false] },
-  { key: "Delivered", title: ["Work", "delivered"], sub: "The worker hands over the files and signs the payout", signed: [false, true, false] },
-  { key: "Paid", title: ["Paid out", "two of three"], sub: "You sign too, and the vault pays their wallet directly", signed: [true, true, false] },
+  { key: "Funded", sub: "The budget sits in a 2 of 3 vault before anyone starts", signed: [true, false, false] },
+  { key: "Delivered", sub: "The worker hands over the files and signs the payout", signed: [false, true, false] },
+  { key: "Paid", sub: "You sign too, and the vault pays their wallet directly", signed: [true, true, false] },
 ];
 const SIGNERS = ["Poster", "Worker", "Referee"];
-
-const ARROW = "M7 17L17 7M9 7h8v8";
 
 export default function VaultHero() {
   const [step, setStep] = useState(0);
   const touched = useRef(false);
   const hover = useRef(false);
-  const pane = useRef<HTMLDivElement>(null);
+  const pane = useRef<HTMLElement>(null);
   const card = useRef<HTMLDivElement>(null);
 
   // walk through the steps on a calm clock, paused while the pointer is on the card or after a pick
@@ -65,34 +63,24 @@ export default function VaultHero() {
   const s = STEPS[step];
 
   return (
-    <section className="vx" aria-label="Gigs">
-      <div className="vx-pane vx-left">
-        <div className="vx-copy">
-          <h1 className="vx-title">
-            <span>Crypto work,</span>
-            <span>paid from</span>
-            <span>a vault</span>
-          </h1>
-          <p className="vx-lede">Hire anyone for design, edits, threads or code. The budget waits in a 2 of 3 vault until the work is done.</p>
-        </div>
-        <div className="vx-actions">
-          <Link href="/post" className="vx-cta">
-            <span className="vx-cta-label">Post a gig</span>
-            <span className="vx-cta-arrow" aria-hidden>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d={ARROW} /></svg>
-            </span>
-          </Link>
-          <Link href="/#board" className="vx-quiet">Find work</Link>
+    <section className="vh2" aria-label="Gigs" ref={pane}>
+      <div className="vh2-copy">
+        <h1 className="vh2-title">
+          <span>Crypto work,</span>
+          <span>paid from a vault</span>
+        </h1>
+        <p className="vh2-lede">Hire anyone for design, edits, threads or code. The budget waits in a 2 of 3 vault until the work is done.</p>
+        <div className="vh2-actions">
+          <Link href="/post" className="vh2-btn vh2-btn-main">Post a gig</Link>
+          <Link href="/#board" className="vh2-btn">Find work</Link>
         </div>
       </div>
 
-      <div className="vx-pane vx-right" id="vault" ref={pane}>
-        <svg className="vx-rings" viewBox="0 0 600 600" aria-hidden>
-          <circle cx="300" cy="300" r="299.5" fill="none" stroke="url(#ringDown)" />
-          <circle cx="300" cy="300" r="210" fill="none" stroke="url(#ringDown)" />
+      <div className="vh2-vault" id="vault">
+        <svg className="vh2-rings" viewBox="0 0 800 800" aria-hidden>
+          <circle cx="400" cy="400" r="399.5" fill="none" stroke="url(#ringUp)" />
+          <circle cx="400" cy="400" r="300" fill="none" stroke="url(#ringUp)" />
         </svg>
-        <p className="vx-eyebrow">Escrow on Solana</p>
-
         <div className="vx-stage">
           <div className="vx-float">
             <div className="vx-card" ref={card} onPointerEnter={() => { hover.current = true; }} onPointerLeave={() => { hover.current = false; }}>
@@ -115,18 +103,14 @@ export default function VaultHero() {
           </div>
         </div>
 
-        <div className="vx-show" aria-live="polite">
-          <div key={s.key} className="vx-swap">
-            <h2 className="vx-show-title"><span>{s.title[0]}</span><span>{s.title[1]}</span></h2>
-            <p className="vx-show-sub">{s.sub}</p>
-          </div>
-        </div>
-
-        <div className="vx-dots" role="group" aria-label="Steps of a gig">
+        <div className="vh2-steps" role="group" aria-label="Steps of a gig">
           {STEPS.map((x, i) => (
-            <button key={x.key} className={i === step ? "is-on" : undefined} aria-pressed={i === step} aria-label={`Show ${x.key.toLowerCase()}`} onClick={() => pick(i)} />
+            <button key={x.key} className={i === step ? "is-on" : undefined} aria-pressed={i === step} onClick={() => pick(i)}>
+              <span className="vh2-step-n">{i + 1}</span>{x.key}
+            </button>
           ))}
         </div>
+        <p className="vh2-sub" aria-live="polite"><span key={s.key} className="vx-swap">{s.sub}</span></p>
       </div>
     </section>
   );

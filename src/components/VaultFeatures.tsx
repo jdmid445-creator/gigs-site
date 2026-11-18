@@ -2,13 +2,15 @@ import Logo from "./Logo";
 
 // "How the vault works": three cards, each with a small coded object above its copy.
 
-const KEY = "M15.5 7.5a3.5 3.5 0 1 1-3.08 5.16L5 20.08V17h2v-2h2v-2l2.42-2.42A3.5 3.5 0 0 1 15.5 7.5zM16.5 9.75h.01";
+const KEYHOLE = "M12 5a3.6 3.6 0 0 0-1.7 6.77L9.4 19h5.2l-.9-7.23A3.6 3.6 0 0 0 12 5z";
 const BOLT = "M13 3L5 13.5h6L10 21l8-10.5h-6L13 3z";
 
-function Ring({ size, up = false, className }: { size: number; up?: boolean; className: string }) {
+// One ring per card, same size and centre in all three, so the cards read as a set.
+function Ring() {
   return (
-    <svg className={`vf-ring ${className}`} viewBox={`0 0 ${size} ${size}`} aria-hidden>
-      <circle cx={size / 2} cy={size / 2} r={size / 2 - 0.5} fill="none" stroke={`url(#${up ? "ringUp" : "ringDown"})`} />
+    <svg className="vf-ring" viewBox="0 0 340 340" aria-hidden>
+      <circle cx="170" cy="170" r="169.5" fill="none" stroke="url(#ringDown)" />
+      <circle cx="170" cy="170" r="110" fill="none" stroke="url(#ringDown)" />
     </svg>
   );
 }
@@ -20,11 +22,11 @@ export default function VaultFeatures() {
       <div className="vf-grid">
         <article className="vf-card" data-reveal>
           <div className="vf-art">
-            <Ring size={420} className="vf-ring-a" />
+            <Ring />
             <span className="vf-tag vf-tag-top">Poster, worker, referee</span>
             <div className="vf-keyplate">
               <div className="vf-well">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={KEY} /></svg>
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={KEYHOLE} /></svg>
               </div>
             </div>
           </div>
@@ -34,9 +36,9 @@ export default function VaultFeatures() {
 
         <article className="vf-card vf-card-mid" data-reveal>
           <div className="vf-art">
-            <Ring size={420} up className="vf-ring-b" />
+            <Ring />
             <span className="vf-tag vf-tag-l">Vault</span>
-            <span className="vf-tag vf-tag-r">Their wallet</span>
+            <span className="vf-tag vf-tag-r">Wallet</span>
             <span className="vf-node" aria-hidden />
             <div className="vf-coin" aria-hidden><Logo size={40} /></div>
           </div>
@@ -46,8 +48,7 @@ export default function VaultFeatures() {
 
         <article className="vf-card" data-reveal>
           <div className="vf-art">
-            <Ring size={420} className="vf-ring-a" />
-            <Ring size={230} className="vf-ring-c" />
+            <Ring />
             <span className="vf-tag vf-tag-top">Paid gigs only</span>
             <div className="vf-badge">
               <div className="vf-badge-in">

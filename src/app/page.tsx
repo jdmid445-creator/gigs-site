@@ -42,26 +42,26 @@ export default function Home() {
       <section className="section container" aria-label="Search open gigs">
         <div className="find-card" data-reveal>
           <h2 className="display find-title">Search open gigs</h2>
-          <Finder />
+          <div className="find-box"><Finder /></div>
         </div>
       </section>
 
       <section className="section container" aria-label="Post a gig">
-        <div className="duo" data-reveal>
-          <div className="duo-left">
-            <h2 className="display duo-title">Post a gig in a minute</h2>
-            <ol className="steps3">
-              {HOPS.map((h, i) => (
-                <li key={h.t}><span className="n">{i + 1}</span><span><strong>{h.t}</strong><span>{h.d}</span></span></li>
-              ))}
-            </ol>
+        <div className="post-panel" data-reveal>
+          <div className="head-c">
+            <h2 className="display big-title">Post a gig in a minute</h2>
           </div>
-          <div className="duo-right"><QuickPost /></div>
+          <ol className="steps3">
+            {HOPS.map((h, i) => (
+              <li key={h.t}><span className="n">{i + 1}</span><strong>{h.t}</strong><span>{h.d}</span></li>
+            ))}
+          </ol>
+          <div className="post-tool"><QuickPost /></div>
         </div>
       </section>
 
       <section id="board" className="section container" data-reveal>
-        <div className="head-l">
+        <div className="head-c">
           <h2 className="display big-title">Work that&apos;s paid for</h2>
           <p className="lede">Every gig here has a budget waiting to be locked. Apply, get hired, and the money is in the vault before you start.</p>
         </div>
@@ -69,7 +69,7 @@ export default function Home() {
       </section>
 
       <section id="live" className="section container" data-reveal>
-        <div className="head-l">
+        <div className="head-c">
           <h2 className="display big-title">Out in the open</h2>
           <p className="lede">New gigs, locked budgets and payouts as they happen. Only real activity from the board.</p>
         </div>
@@ -77,7 +77,7 @@ export default function Home() {
       </section>
 
       <section className="section container" data-reveal>
-        <div className="head-l">
+        <div className="head-c">
           <h2 className="display big-title">Hiring, compared</h2>
           <p className="lede">What it usually takes to pay someone for work, and what changes when the budget is locked first.</p>
         </div>
@@ -96,7 +96,7 @@ export default function Home() {
       </section>
 
       <section className="section container" data-reveal>
-        <div className="head-l">
+        <div className="head-c">
           <h2 className="display big-title">Questions</h2>
           <p className="lede">More detail in the <Link href="/docs" className="inline-link">docs</Link></p>
         </div>
@@ -112,14 +112,10 @@ export default function Home() {
 
       <section className="section container" data-reveal>
         <div className="end">
-          <div className="end-copy">
-            <h2 className="display end-title">Somebody out there can do it</h2>
-            <p>Post the job, pick who you like, and pay them from a vault they can see is full. Posting is free.</p>
-            <Link href="/post" className="btn-go">Post a gig</Link>
-          </div>
-          <div className="end-art">
-            <Bunny full size={190} id="gigs-cta" title="GIGS waving" ground={false} />
-          </div>
+          <Bunny full size={150} id="gigs-cta" title="GIGS waving" ground={false} />
+          <h2 className="display end-title">Somebody out there<br />can do it</h2>
+          <p>Post the job, pick who you like, and pay them from a vault they can see is full. Posting is free.</p>
+          <Link href="/post" className="btn-go">Post a gig</Link>
         </div>
       </section>
     </div>

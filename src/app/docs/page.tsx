@@ -84,7 +84,7 @@ export default function Docs() {
           Solana network fees are a fraction of a cent. Creating a vault also has a small one-time account cost, which your wallet
           shows before you sign.
         </p>
-        <p style={{ marginTop: 28 }}><Link className="btn btn-ink" href="/post" style={{ textDecoration: "none", color: "#fff" }}>Post a gig</Link></p>
+        <p style={{ marginTop: 28 }}><Link className="btn btn-ink" href="/post">Post a gig</Link></p>
       </article>
     </div>
   );
